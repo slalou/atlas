@@ -298,18 +298,22 @@
     <div class="filter-label">Familles de produits</div>
     <div class="filter-chips">
       <span class="chip chip-all active" data-family="all"       onclick="filterFamily('all',this)">Toutes familles</span>
-      <span class="chip" data-family="Beurre"                    onclick="filterFamily('Beurre',this)">🧈 Beurre</span>
-      <span class="chip" data-family="Lait"                      onclick="filterFamily('Lait',this)">🥛 Lait</span>
-      <span class="chip" data-family="Café"                      onclick="filterFamily('Café',this)">☕ Café</span>
-      <span class="chip" data-family="Jus d'orange"              onclick="filterFamily(&quot;Jus d'orange&quot;,this)">🍊 Jus d'orange</span>
-      <span class="chip" data-family="Blé"                       onclick="filterFamily('Blé',this)">🌾 Blé</span>
-      <span class="chip" data-family="Porc"                      onclick="filterFamily('Porc',this)">🐷 Porc</span>
-      <span class="chip" data-family="Dinde"                     onclick="filterFamily('Dinde',this)">🦃 Dinde</span>
-      <span class="chip" data-family="Œufs"                      onclick="filterFamily('Œufs',this)">🥚 Œufs</span>
-      <span class="chip" data-family="Yaourts"                   onclick="filterFamily('Yaourts',this)">🫙 Yaourts</span>
-      <span class="chip" data-family="Compotes"                  onclick="filterFamily('Compotes',this)">🍎 Compotes</span>
-      <span class="chip" data-family="Thé"                       onclick="filterFamily('Thé',this)">🍵 Thé</span>
-      <span class="chip" data-family="Viennoiseries"             onclick="filterFamily('Viennoiseries',this)">🥐 Viennoiseries</span>
+      <span class="chip" data-family="Beurre"               onclick="filterFamily('Beurre',this)">🧈 Beurre</span>
+      <span class="chip" data-family="Lait"                 onclick="filterFamily('Lait',this)">🥛 Lait</span>
+      <span class="chip" data-family="Yaourts"              onclick="filterFamily('Yaourts',this)">🫙 Yaourts</span>
+      <span class="chip" data-family="Pain & Brioche"       onclick="filterFamily('Pain & Brioche',this)">🍞 Pain &amp; Brioche</span>
+      <span class="chip" data-family="Viennoiseries"        onclick="filterFamily('Viennoiseries',this)">🥐 Viennoiseries</span>
+      <span class="chip" data-family="Jus de fruits"        onclick="filterFamily('Jus de fruits',this)">🍊 Jus de fruits</span>
+      <span class="chip" data-family="Compotes"             onclick="filterFamily('Compotes',this)">🍎 Compotes</span>
+      <span class="chip" data-family="Pâte à tartiner"      onclick="filterFamily('Pâte à tartiner',this)">🍫 Pâte à tartiner</span>
+      <span class="chip" data-family="Confitures"           onclick="filterFamily('Confitures',this)">🍓 Confitures</span>
+      <span class="chip" data-family="Porc & Charcuterie"   onclick="filterFamily('Porc & Charcuterie',this)">🥓 Porc &amp; Charcut.</span>
+      <span class="chip" data-family="Crêpes & Gaufres"     onclick="filterFamily('Crêpes & Gaufres',this)">🥞 Crêpes &amp; Gaufres</span>
+      <span class="chip" data-family="Fromages"             onclick="filterFamily('Fromages',this)">🧀 Fromages</span>
+      <span class="chip" data-family="Salade de fruits"     onclick="filterFamily('Salade de fruits',this)">🍇 Salade fruits</span>
+      <span class="chip" data-family="Œufs"                 onclick="filterFamily('Œufs',this)">🥚 Œufs</span>
+      <span class="chip" data-family="Café"                 onclick="filterFamily('Café',this)">☕ Café</span>
+      <span class="chip" data-family="Blé"                  onclick="filterFamily('Blé',this)">🌾 Blé</span>
     </div>
   </div>
 
@@ -358,6 +362,7 @@
               <th onclick="sortTable('change7')" style="cursor:pointer">7 jours ↕</th>
               <th onclick="sortTable('change30')"style="cursor:pointer">30 jours ↕</th>
               <th>Tendance 30j</th>
+              <th>Source</th>
             </tr>
           </thead>
           <tbody id="price-tbody"></tbody>
@@ -425,8 +430,8 @@
 </div><!-- /container -->
 
 <footer class="footer">
-  <span>Atlas © 2026 — Données indicatives à titre de référence uniquement</span>
-  <span>Sources : FAO · CME Group · Euronext · INSEE · Actualisation quotidienne</span>
+  <span>Atlas © 2026 — Prix officiels et données indicatives</span>
+  <span>Sources officielles : RNM FranceAgriMer · ICE/NYBOT (KC=F) · Yahoo Finance · CBOT (proxy blé)</span>
 </footer>
 
 <script>
@@ -434,30 +439,53 @@
    PRODUCT CATALOGUE
 ═══════════════════════════════════ */
 const PRODUCTS = [
-  { id:'beurre-pl',   name:'Beurre plaquette 250g',  family:'Beurre',        unit:'€/100g',  base:1.85,  vol:0.06 },
-  { id:'beurre-vr',   name:'Beurre vrac industriel', family:'Beurre',        unit:'€/kg',    base:7.20,  vol:0.09 },
-  { id:'lait-ent',    name:'Lait entier UHT 1L',     family:'Lait',          unit:'€/L',     base:1.12,  vol:0.04 },
-  { id:'lait-pdr',    name:'Lait écrémé poudre',     family:'Lait',          unit:'€/100kg', base:345,   vol:0.07 },
-  { id:'cafe-ara',    name:'Café Arabica',            family:'Café',          unit:'¢USD/lb', base:198,   vol:0.12 },
-  { id:'cafe-rob',    name:'Café Robusta',            family:'Café',          unit:'USD/t',   base:2840,  vol:0.11 },
-  { id:'jo-conc',     name:'JO concentré surgelé',   family:"Jus d'orange",  unit:'¢USD/lb', base:312,   vol:0.14 },
-  { id:'jo-nfc',      name:'JO fraîcheur NFC',        family:"Jus d'orange",  unit:'€/L',     base:2.10,  vol:0.08 },
-  { id:'ble-meu',     name:'Blé meunier Euronext',   family:'Blé',           unit:'€/t',     base:224,   vol:0.09 },
-  { id:'ble-dur',     name:'Blé dur semoulier',       family:'Blé',           unit:'€/t',     base:298,   vol:0.10 },
-  { id:'porc-ue',     name:'Porc carcasse UE',        family:'Porc',          unit:'€/kg',    base:1.68,  vol:0.07 },
-  { id:'porc-fi',     name:'Filet de porc frais',     family:'Porc',          unit:'€/kg',    base:7.40,  vol:0.06 },
-  { id:'dinde-fi',    name:'Dinde filet FR',          family:'Dinde',         unit:'€/kg',    base:8.20,  vol:0.05 },
-  { id:'dinde-ca',    name:'Dinde carcasse',          family:'Dinde',         unit:'€/kg',    base:3.15,  vol:0.06 },
-  { id:'oeufs-pa',    name:'Œufs plein air cat A',   family:'Œufs',          unit:'€/unité', base:0.31,  vol:0.08 },
-  { id:'oeufs-bi',    name:'Œufs bio calibre M',     family:'Œufs',          unit:'€/unité', base:0.42,  vol:0.07 },
-  { id:'yaourt-na',   name:'Yaourt nature brassé',    family:'Yaourts',       unit:'€/pot',   base:0.28,  vol:0.05 },
-  { id:'yaourt-fr',   name:'Yaourt fruité 125g',      family:'Yaourts',       unit:'€/pot',   base:0.34,  vol:0.04 },
-  { id:'comp-po',     name:'Compote pomme maison',    family:'Compotes',      unit:'€/kg',    base:1.60,  vol:0.05 },
-  { id:'comp-ro',     name:'Compote fruits rouges',   family:'Compotes',      unit:'€/kg',    base:2.20,  vol:0.06 },
-  { id:'the-no',      name:'Thé noir Assam BOP',     family:'Thé',           unit:'USD/kg',  base:3.40,  vol:0.09 },
-  { id:'the-ve',      name:'Thé vert Sencha',         family:'Thé',           unit:'USD/kg',  base:7.80,  vol:0.08 },
-  { id:'vien-cr',     name:'Croissant beurre',        family:'Viennoiseries', unit:'€/unité', base:0.62,  vol:0.04 },
-  { id:'vien-pc',     name:'Pain au chocolat',        family:'Viennoiseries', unit:'€/unité', base:0.68,  vol:0.04 },
+  // Beurre
+  { id:'beurre-pl',   name:'Beurre plaquette 250g',    family:'Beurre',          unit:'€/kg',    base:5.50,  vol:0.06 },
+  { id:'beurre-vr',   name:'Beurre vrac industriel',   family:'Beurre',          unit:'€/kg',    base:7.20,  vol:0.09 },
+  // Lait
+  { id:'lait-ent',    name:'Lait UHT demi-écrémé 1L',  family:'Lait',            unit:'€/L',     base:1.12,  vol:0.04 },
+  { id:'lait-pdr',    name:'Lait écrémé poudre',        family:'Lait',            unit:'€/100kg', base:345,   vol:0.07 },
+  // Yaourts
+  { id:'yaourt-na',   name:'Yaourt nature brassé',      family:'Yaourts',         unit:'€/pot',   base:0.28,  vol:0.05 },
+  { id:'yaourt-fr',   name:'Yaourt fruité 125g',        family:'Yaourts',         unit:'€/pot',   base:0.34,  vol:0.04 },
+  // Pain & Brioche
+  { id:'pain-mi',     name:'Pain de mie tranché',       family:'Pain & Brioche',  unit:'€/kg',    base:2.40,  vol:0.04 },
+  { id:'pain-br',     name:'Brioche pur beurre',        family:'Pain & Brioche',  unit:'€/kg',    base:4.80,  vol:0.05 },
+  // Viennoiseries
+  { id:'vien-cr',     name:'Croissant beurre',          family:'Viennoiseries',   unit:'€/unité', base:0.62,  vol:0.04 },
+  { id:'vien-pc',     name:'Pain au chocolat',          family:'Viennoiseries',   unit:'€/unité', base:0.68,  vol:0.04 },
+  // Jus de fruits
+  { id:'jo-nfc',      name:'Jus orange NFC frais',      family:'Jus de fruits',   unit:'€/L',     base:2.10,  vol:0.08 },
+  { id:'jo-po',       name:'Jus de pomme',              family:'Jus de fruits',   unit:'€/L',     base:1.45,  vol:0.06 },
+  // Compotes
+  { id:'comp-po',     name:'Compote pomme maison',      family:'Compotes',        unit:'€/kg',    base:1.60,  vol:0.05 },
+  { id:'comp-ro',     name:'Compote fruits rouges',     family:'Compotes',        unit:'€/kg',    base:2.20,  vol:0.06 },
+  // Pâte à tartiner
+  { id:'ptat-no',     name:'Pâte à tartiner noisette',  family:'Pâte à tartiner', unit:'€/kg',    base:5.40,  vol:0.07 },
+  // Confitures
+  { id:'conf-fr',     name:'Confiture fraise 370g',     family:'Confitures',      unit:'€/pot',   base:2.10,  vol:0.05 },
+  { id:'conf-ab',     name:'Confiture abricot 370g',    family:'Confitures',      unit:'€/pot',   base:1.90,  vol:0.05 },
+  // Porc — charcuterie
+  { id:'porc-ue',     name:'Porc carcasse cl. E',       family:'Porc & Charcuterie', unit:'€/kg', base:1.68,  vol:0.07 },
+  { id:'bacon-tr',    name:'Bacon fumé tranché IVP',    family:'Porc & Charcuterie', unit:'€/kg', base:8.50,  vol:0.06 },
+  { id:'sauc-po',     name:'Saucisses de porc fraîches',family:'Porc & Charcuterie', unit:'€/kg', base:7.20,  vol:0.05 },
+  // Crêpes & Gaufres
+  { id:'crep-fr',     name:'Crêpes fraîches nature',    family:'Crêpes & Gaufres', unit:'€/kg',   base:4.20,  vol:0.04 },
+  { id:'gauf-na',     name:'Gaufres nature',            family:'Crêpes & Gaufres', unit:'€/kg',   base:5.10,  vol:0.04 },
+  // Fromages
+  { id:'from-cant',   name:'Cantal AOP',                family:'Fromages',        unit:'€/kg',    base:9.80,  vol:0.05 },
+  { id:'from-emm',    name:'Emmental râpé',             family:'Fromages',        unit:'€/kg',    base:7.40,  vol:0.04 },
+  { id:'from-sn',     name:'Saint-Nectaire fermier',    family:'Fromages',        unit:'€/kg',    base:13.50, vol:0.06 },
+  // Salade de fruits
+  { id:'salf-fr',     name:'Salade de fruits frais',    family:'Salade de fruits', unit:'€/kg',   base:4.80,  vol:0.07 },
+  // Œufs
+  { id:'oeufs-pa',    name:'Œufs M plein air (100 pcs)',family:'Œufs',            unit:'€/100 pcs',base:18.6, vol:0.08 },
+  { id:'oeufs-br',    name:'Œufs brouillés pasteurisés',family:'Œufs',            unit:'€/kg',    base:6.20,  vol:0.06 },
+  // Café
+  { id:'cafe-ara',    name:'Café Arabica (ICE/NYBOT)',   family:'Café',            unit:'¢USD/lb', base:270,   vol:0.10 },
+  { id:'cafe-rob',    name:'Café Robusta (ICE/LIFFE)',   family:'Café',            unit:'USD/t',   base:2500,  vol:0.09 },
+  // Blé (proxy CBOT)
+  { id:'ble-cbot',    name:'Blé CBOT (proxy MATIF)',     family:'Blé',             unit:'¢USD/bu', base:540,   vol:0.09 },
 ];
 
 const EVO_COLORS = ['#58a6ff','#3fb950','#f85149','#d29922','#bc8cff'];
@@ -553,12 +581,16 @@ function renderTable() {
   fd.forEach(d=>{
     const sid='sp-'+d.id;
     const tr=document.createElement('tr');
+    const srcBadge = d.isReal
+      ? `<span style="font-size:10px;padding:2px 5px;border-radius:3px;background:#1a3a1a;color:#3fb950;border:1px solid #2d5a2d;">${d.sourceLabel||'Officiel'}</span>`
+      : `<span style="font-size:10px;padding:2px 5px;border-radius:3px;background:#1e1e2e;color:#484f58;border:1px solid #30363d;">Indicatif</span>`;
     tr.innerHTML=`
       <td><div class="product-name">${d.name}</div><div class="product-family">${d.family}</div></td>
       <td><div class="price-val">${fmt(d.cur,pDec(d))}</div><div class="price-unit">${d.unit}</div></td>
       <td class="${changeClass(d.change7)}">${fmtChange(d.change7)}</td>
       <td class="${changeClass(d.change30)}">${fmtChange(d.change30)}</td>
       <td><canvas id="${sid}" class="trend-spark" width="80" height="28"></canvas></td>
+      <td>${srcBadge}</td>
     `;
     tbody.appendChild(tr);
     requestAnimationFrame(()=>drawSpark(sid, d));
@@ -846,6 +878,7 @@ function setView(v, btn) {
 ═══════════════════════════════════ */
 function refreshData() {
   DATA.forEach(d=>{
+    if(d.isReal) return; // ne pas écraser les données officielles
     const delta=(Math.random()-0.5)*d.vol*d.cur*0.1;
     d.series.push(Math.max(d.cur+delta, d.base*0.6));
     d.series.shift();
@@ -886,10 +919,76 @@ function renderAll() {
   updateTime();
 }
 
+/* ═══════════════════════════════════
+   REAL-TIME DATA LOADER
+   Sources : prices.json (RNM + ICE via bot) + Yahoo Finance v8 direct (café)
+═══════════════════════════════════ */
+const SOURCE_MAP = {
+  'beurre-pl': { label:'RNM FranceAgriMer' },
+  'lait-ent':  { label:'RNM FranceAgriMer' },
+  'oeufs-pa':  { label:'RNM FranceAgriMer' },
+  'porc-ue':   { label:'RNM FranceAgriMer' },
+  'cafe-ara':  { label:'ICE/NYBOT' },
+  'cafe-rob':  { label:'ICE/LIFFE' },
+  'ble-cbot':  { label:'CBOT proxy' },
+};
+
+async function loadRealPrices() {
+  const ts = Date.now();
+  const [jsonRes, coffeeRes] = await Promise.allSettled([
+    fetch(`./prices.json?t=${ts}`),
+    fetch(`https://query1.finance.yahoo.com/v8/finance/chart/KC=F?interval=1d&range=5d`)
+  ]);
+
+  const realPrices = {};
+
+  if (jsonRes.status === 'fulfilled' && jsonRes.value.ok) {
+    try {
+      const data = await jsonRes.value.json();
+      Object.entries(data.prices || {}).forEach(([id, v]) => {
+        if (v && v.price != null) realPrices[id] = v.price;
+      });
+      if (data.updated) {
+        const d = new Date(data.updated);
+        document.getElementById('update-time').textContent =
+          d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) +
+          ' · ' + d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+      }
+    } catch(e) { console.warn('prices.json parse error', e); }
+  }
+
+  // Café arabica en direct depuis Yahoo Finance (CORS OK)
+  if (coffeeRes.status === 'fulfilled' && coffeeRes.value.ok) {
+    try {
+      const cd = await coffeeRes.value.json();
+      const closes = cd?.chart?.result?.[0]?.indicators?.quote?.[0]?.close ?? [];
+      const last = closes.filter(x => x != null).pop();
+      if (last) realPrices['cafe-ara'] = parseFloat(last.toFixed(2));
+    } catch(e) { console.warn('Yahoo KC=F error', e); }
+  }
+
+  // Injecte les prix réels dans DATA
+  DATA.forEach(d => {
+    if (realPrices[d.id] != null) {
+      d.cur = realPrices[d.id];
+      d.isReal = true;
+      d.sourceLabel = SOURCE_MAP[d.id]?.label || 'Officiel';
+      // recalcule variations sur série simulée (historique indicatif)
+      d.change7  = ((d.cur - d.series[DAYS-8])  / d.series[DAYS-8])  * 100;
+      d.change30 = ((d.cur - d.series[DAYS-31]) / d.series[DAYS-31]) * 100;
+    }
+  });
+
+  renderAll();
+  // Recharge les prix réels toutes les 15 min
+  setTimeout(loadRealPrices, 15 * 60 * 1000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   Chart.defaults.color='#8b949e';
   Chart.defaults.borderColor='rgba(48,54,61,0.6)';
   renderAll();
+  loadRealPrices();
   setInterval(updateTime, 60000);
   setInterval(refreshData, 300000);
 });
