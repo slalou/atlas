@@ -323,6 +323,16 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── EVO SELECT ── */
+    .evo-select {
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-primary); border-radius: 6px;
+      padding: 4px 10px; font-size: 12px; cursor: pointer; outline: none;
+      max-width: 280px;
+    }
+    .evo-select:focus { border-color: var(--accent-blue); }
+    .evo-select option { background: var(--bg-card); color: var(--text-primary); }
   </style>
 </head>
 <body>
@@ -462,17 +472,20 @@
   <!-- EVOLUTION CHART -->
   <div class="card" style="margin-bottom:24px;">
     <div class="card-header">
-      <div class="card-title" id="evo-title">📉 Évolution des prix — 6 mois (base 100)</div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <div class="toggle-group" id="evo-period-btns">
-          <button class="toggle-btn"       onclick="setEvoPeriod(30,this)">1M</button>
-          <button class="toggle-btn"       onclick="setEvoPeriod(90,this)">3M</button>
-          <button class="toggle-btn active" onclick="setEvoPeriod(180,this)">6M</button>
-          <button class="toggle-btn"       onclick="setEvoPeriod(365,this)">1AN</button>
-          <button class="toggle-btn"       onclick="setEvoPeriod(730,this)">2ANS</button>
-        </div>
-        <div class="toggle-group" id="evo-toggles"></div>
+      <div class="card-title">📉 Évolution des prix du marché</div>
+      <div class="toggle-group" id="evo-period-btns">
+        <button class="toggle-btn"        onclick="setEvoPeriod(30,this)">1M</button>
+        <button class="toggle-btn"        onclick="setEvoPeriod(90,this)">3M</button>
+        <button class="toggle-btn active" onclick="setEvoPeriod(180,this)">6M</button>
+        <button class="toggle-btn"        onclick="setEvoPeriod(365,this)">1AN</button>
+        <button class="toggle-btn"        onclick="setEvoPeriod(730,this)">2ANS</button>
       </div>
+    </div>
+    <!-- Sélecteur de matière -->
+    <div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Matière</span>
+      <select id="evo-product-select" class="evo-select" onchange="setEvoProduct(this.value)"></select>
+      <span id="evo-source-label" style="font-size:10px;color:var(--text-muted);"></span>
     </div>
     <div class="card-body">
       <div class="chart-wrap" style="height:300px;"><canvas id="evo-chart"></canvas></div>
@@ -635,14 +648,30 @@ const DATA = PRODUCTS.map((p, i) => {
 /* ═══════════════════════════════════
    STATE
 ═══════════════════════════════════ */
+/* Catalogue des matières pour le graphique évolution */
+const EVO_PRODUCTS = [
+  { pid:'beurre-pl', label:'Beurre plaquette',      unit:'€/100g',     src:'FranceAgriMer',            factor:1    },
+  { pid:'beurre-vr', label:'Beurre vrac',            unit:'€/kg',       src:'FranceAgriMer',            factor:1    },
+  { pid:'lait-ent',  label:'Lait cru',               unit:'€/1000L',    src:'FranceAgriMer',            factor:1000 },
+  { pid:'porc-ue',   label:'Porc carcasse',          unit:'€/kg',       src:'marche-porc-francais.com', factor:1    },
+  { pid:'oeufs-pa',  label:'Œufs plein air',         unit:'€/unité',    src:'RNM FranceAgriMer',        factor:1    },
+  { pid:'cafe-ara',  label:'Café Arabica',            unit:'cts USD/lb', src:'Yahoo Finance (KC=F)',     factor:1    },
+  { pid:'cafe-rob',  label:'Café Robusta',            unit:'USD/tonne',  src:'Yahoo Finance (RC=F)',     factor:1    },
+  { pid:'ble-meu',   label:'Blé meunier',            unit:'€/tonne',    src:'Euronext',                 factor:1    },
+  { pid:'ble-dur',   label:'Blé dur',                unit:'€/tonne',    src:'Euronext',                 factor:1    },
+  { pid:'jo-conc',   label:"Jus d'orange (FCOJ)",    unit:'cts USD/lb', src:'Yahoo Finance (OJ=F)',     factor:1    },
+  { pid:'dinde-fi',  label:'Dinde filet',            unit:'€/kg',       src:'RNM FranceAgriMer',        factor:1    },
+];
+
 let currentFamily = 'all';
-let sortKey  = 'change7';
-let sortAsc  = false;
-let evoPeriod = 180;   // défaut 6M
-let evoChart  = null;
-let barChart  = null;
-let hbarChart = null;
-let sparks    = {};
+let sortKey   = 'change7';
+let sortAsc   = false;
+let evoPeriod  = 180;         // défaut 6M
+let evoProduct = 'beurre-pl'; // matière sélectionnée
+let evoChart   = null;
+let barChart   = null;
+let hbarChart  = null;
+let sparks     = {};
 
 function filtered() {
   return currentFamily === 'all' ? DATA : DATA.filter(d => d.family === currentFamily);
@@ -858,75 +887,82 @@ function setEvoPeriod(days, btn) {
   evoPeriod = days;
   document.querySelectorAll('#evo-period-btns .toggle-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const labels = {30:'1 mois', 90:'3 mois', 180:'6 mois', 365:'1 an', 730:'2 ans'};
-  document.getElementById('evo-title').textContent = `📉 Évolution des prix — ${labels[days]||days+'j'} (base 100)`;
+  renderEvo();
+}
+
+function evoPrecision(baseVal) {
+  return baseVal >= 100 ? 0 : baseVal >= 10 ? 1 : 2;
+}
+
+function populateEvoSelect() {
+  const sel = document.getElementById('evo-product-select');
+  if (!sel) return;
+  sel.innerHTML = '';
+  EVO_PRODUCTS.forEach(ep => {
+    const opt = document.createElement('option');
+    opt.value = ep.pid;
+    opt.textContent = ep.label + '  (' + ep.unit + ')';
+    if (ep.pid === evoProduct) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function setEvoProduct(pid) {
+  evoProduct = pid;
   renderEvo();
 }
 
 function renderEvo() {
-  const fd = filtered().slice(0,5);
+  const ep = EVO_PRODUCTS.find(p => p.pid === evoProduct) || EVO_PRODUCTS[0];
+  const prod = DATA.find(d => d.id === ep.pid);
+  if (!prod) return;
+
   const periodLabels = allDateLabels.slice(-evoPeriod);
-  const tog = document.getElementById('evo-toggles');
-  tog.innerHTML = '';
-  fd.forEach((p,i)=>{
-    const btn=document.createElement('button');
-    btn.className='toggle-btn active';
-    btn.style.borderColor=EVO_COLORS[i];
-    btn.style.color=EVO_COLORS[i];
-    btn.style.background=EVO_COLORS[i]+'22';
-    btn.textContent = p.name.length>16?p.name.slice(0,16)+'…':p.name;
-    btn.onclick=()=>{ toggleEvoDataset(i,btn,EVO_COLORS[i]); };
-    tog.appendChild(btn);
-  });
+  const periodSeries = prod.series.slice(-evoPeriod).map(v => +(v * ep.factor));
+  const dec = evoPrecision(prod.base * ep.factor);
+
+  // Update source label
+  const srcEl = document.getElementById('evo-source-label');
+  if (srcEl) srcEl.textContent = 'Source : ' + ep.src;
 
   const ctx = document.getElementById('evo-chart').getContext('2d');
-  if(evoChart) evoChart.destroy();
-  evoChart = new Chart(ctx,{
-    type:'line',
-    data:{
+  if (evoChart) evoChart.destroy();
+  evoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
       labels: periodLabels,
-      datasets: fd.map((p,i)=>{
-        const periodSeries = p.series.slice(-evoPeriod);
-        const b0 = periodSeries[0];
-        return {
-          label:p.name,
-          data: periodSeries.map(v=>+((v/b0*100).toFixed(2))),
-          borderColor: EVO_COLORS[i],
-          backgroundColor: EVO_COLORS[i]+'10',
-          borderWidth:2, pointRadius:0, pointHoverRadius:4,
-          tension:0.35, fill:false
-        };
-      })
+      datasets: [{
+        label: ep.label,
+        data: periodSeries.map(v => +v.toFixed(dec)),
+        borderColor: '#58a6ff',
+        backgroundColor: '#58a6ff12',
+        borderWidth: 2, pointRadius: 0, pointHoverRadius: 4,
+        tension: 0.35, fill: true
+      }]
     },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{ backgroundColor:'#1c2330', borderColor:'#30363d', borderWidth:1,
-          titleColor:'#e6edf3', bodyColor:'#8b949e',
-          callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}`} }
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1c2330', borderColor: '#30363d', borderWidth: 1,
+          titleColor: '#e6edf3', bodyColor: '#8b949e',
+          callbacks: {
+            label: c => ` ${ep.label} : ${c.parsed.y.toFixed(dec)} ${ep.unit}`
+          }
+        }
       },
-      scales:{
-        x:{ grid:{color:'var(--chart-grid)'}, ticks:{color:'#8b949e',maxTicksLimit:10,font:{size:11}} },
-        y:{ grid:{color:'var(--chart-grid)'},
-          ticks:{color:'#8b949e',font:{size:11}},
-          title:{display:true,text:'Indice (base 100)',color:'#8b949e',font:{size:11}} }
+      scales: {
+        x: { grid: { color: 'var(--chart-grid)' }, ticks: { color: '#8b949e', maxTicksLimit: 10, font: { size: 11 } } },
+        y: {
+          grid: { color: 'var(--chart-grid)' },
+          ticks: { color: '#8b949e', font: { size: 11 }, callback: v => v.toFixed(dec) },
+          title: { display: true, text: ep.unit, color: '#8b949e', font: { size: 11 } }
+        }
       }
     }
   });
-}
-
-function toggleEvoDataset(idx, btn, color) {
-  if(!evoChart) return;
-  const meta = evoChart.getDatasetMeta(idx);
-  meta.hidden = !meta.hidden;
-  evoChart.update();
-  if(meta.hidden) {
-    btn.style.background='transparent'; btn.style.color='var(--text-muted)'; btn.style.borderColor='var(--border)';
-  } else {
-    btn.style.background=color+'22'; btn.style.color=color; btn.style.borderColor=color;
-  }
 }
 
 /* ═══════════════════════════════════
@@ -1149,6 +1185,7 @@ function renderAll() {
   renderAlerts();
   renderGauge();
   renderDecomp();
+  populateEvoSelect();
   renderEvo();
   renderHBar();
   renderOpportunities();
