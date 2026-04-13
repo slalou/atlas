@@ -260,7 +260,7 @@
     .toggle-btn:hover { border-color: var(--accent-blue); }
 
     /* ── PERIOD SELECTOR ── */
-    .period-selector { display: flex; gap: 4px; }
+    .period-selector { display: flex; gap: 4px; flex-wrap: wrap; }
     .period-btn {
       padding: 3px 10px; border-radius: 4px; border: 1px solid var(--border);
       background: transparent; color: var(--text-secondary);
@@ -273,7 +273,7 @@
 
     /* ── DECOMPOSITION ── */
     .decomp-card { margin-bottom: 24px; }
-    .decomp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .decomp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
     .decomp-family {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -299,16 +299,18 @@
     .decomp-product-name { color: var(--text-secondary); font-weight: 500; flex: 1; }
     .decomp-product-price { color: var(--text-primary); font-weight: 600; margin: 0 12px; }
     .decomp-product-change { font-weight: 600; font-size: 11px; }
+    .decomp-product-weight { font-size: 10px; color: var(--text-muted); margin: 0 6px; white-space: nowrap; }
     .decomp-bar-wrap { margin-top: 8px; }
     .decomp-stacked-bar {
       display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--border);
     }
     .decomp-stacked-bar > div { height: 100%; transition: width 0.4s; }
-    .decomp-bar-legend { display: flex; gap: 10px; margin-top: 5px; }
+    .decomp-bar-legend { display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
     .decomp-bar-legend span { font-size: 9px; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
     .decomp-bar-legend span::before {
       content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block;
     }
+    .decomp-chart-mini { margin-top: 10px; height: 80px; position: relative; }
 
     /* ── DEPLOY BANNER ── */
     .deploy-banner {
@@ -411,11 +413,11 @@
       <div class="deploy-icon">🚀</div>
       <div class="deploy-info">
         <div class="deploy-title">Déploiement réussi</div>
-        <div class="deploy-subtitle">Atlas v2.4.0 — Dashboard Veille Marchés Alimentaires</div>
+        <div class="deploy-subtitle">Atlas v2.5.0 — Dashboard Veille Marchés Alimentaires</div>
         <div class="deploy-meta">
           <span class="deploy-meta-item"><span class="dot-green"></span> Production</span>
           <span class="deploy-meta-item" id="deploy-time">⏱ —</span>
-          <span class="deploy-meta-item">📦 Build #1247</span>
+          <span class="deploy-meta-item">📦 Build #1248</span>
           <span class="deploy-meta-item">⚡ 0 erreurs</span>
         </div>
       </div>
@@ -472,9 +474,11 @@
     <div class="card-header">
       <div class="card-title">🏷️ Décomposition matières premières par famille</div>
       <div class="period-selector" id="decomp-period">
-        <button class="period-btn" data-days="7" onclick="setDecompPeriod(7,this)">7j</button>
-        <button class="period-btn active" data-days="30" onclick="setDecompPeriod(30,this)">30j</button>
-        <button class="period-btn" data-days="90" onclick="setDecompPeriod(90,this)">90j</button>
+        <button class="period-btn" data-days="30" onclick="setDecompPeriod(30,this)">1m</button>
+        <button class="period-btn active" data-days="90" onclick="setDecompPeriod(90,this)">3m</button>
+        <button class="period-btn" data-days="180" onclick="setDecompPeriod(180,this)">6m</button>
+        <button class="period-btn" data-days="365" onclick="setDecompPeriod(365,this)">1an</button>
+        <button class="period-btn" data-days="730" onclick="setDecompPeriod(730,this)">2ans</button>
       </div>
     </div>
     <div class="card-body">
@@ -491,24 +495,8 @@
         <div class="card-title">💰 Cotations du marché</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <div class="period-selector" id="cotation-period">
-            <button class="period-btn active" data-days="7" onclick="setCotationPeriod(7,this)">7j</button>
-            <button class="period-btn" data-days="30" onclick="setCotationPeriod(30,this)">30j</button>
-          </div>
-          <div class="toggle-group">
-            <button class="toggle-btn active" onclick="setView('table',this)">Tableau</button>
-            <button class="toggle-btn"        onclick="setView('chart',this)">Graphique</button>
-          </div>
-        </div>
-      </div>
-      <div id="view-table">
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th onclick="sortTable('name')"    style="cursor:pointer">Produit ↕</th>
-              <th onclick="sortTable('price')"   style="cursor:pointer">Prix actuel ↕</th>
-              <th onclick="sortTable('change7')" style="cursor:pointer">7 jours ↕</th>
-              <th onclick="sortTable('change30')"style="cursor:pointer">30 jours ↕</th>
-              <th>Tendance 30j</th>
-            </tr>
-          </thead>
-          <tbody id="price-
+            <button class="period-btn active" data-days="30" onclick="setCotationPeriod(30,this)">1m</button>
+            <button class="period-btn" data-days="90" onclick="setCotationPeriod(90,this)">3m</button>
+            <button class="period-btn" data-days="180" onclick="setCotationPeriod(180,this)">6m</button>
+            <button class="period-btn" data-days="365" onclick="setCotationPeriod(365,this)">1an</button>
+            <button class="period-btn" data-days="730" onclick="setCotationPeriod(730,this)">2ans</button
