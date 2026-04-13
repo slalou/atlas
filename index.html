@@ -151,8 +151,6 @@
       padding: 14px 20px;
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
     }
     .card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 7px; }
     .card-body { padding: 16px 20px; }
@@ -209,14 +207,12 @@
     .news-list { display: flex; flex-direction: column; }
     .news-item {
       padding: 12px 0; border-bottom: 1px solid var(--border);
-      transition: opacity 0.15s;
+      cursor: pointer; transition: opacity 0.15s;
     }
     .news-item:last-child { border-bottom: none; }
     .news-item:hover { opacity: 0.75; }
     .news-source { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-blue); font-weight: 600; margin-bottom: 4px; }
     .news-title { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.4; margin-bottom: 3px; }
-    .news-title a { color: var(--text-primary); text-decoration: none; transition: color 0.15s; }
-    .news-title a:hover { color: var(--accent-blue); text-decoration: underline; }
     .news-meta { font-size: 11px; color: var(--text-muted); }
     .news-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-right: 5px; }
     .tag-up  { background: rgba(248,81,73,0.15); color: var(--accent-red); }
@@ -247,72 +243,13 @@
     .gauge-fill { height: 100%; border-radius: 2px; transition: width 0.6s; }
 
     /* ── TOGGLE ── */
-    .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .toggle-group { display: flex; gap: 6px; }
     .toggle-btn {
       padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border);
       background: transparent; color: var(--text-secondary);
       cursor: pointer; font-size: 11px; font-weight: 500;
     }
     .toggle-btn.active { background: rgba(88,166,255,0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
-
-    /* ── PERIOD SELECTOR ── */
-    .period-group { display: flex; gap: 4px; }
-    .period-btn {
-      padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border);
-      background: transparent; color: var(--text-secondary);
-      cursor: pointer; font-size: 10px; font-weight: 600;
-      transition: all 0.15s;
-    }
-    .period-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
-    .period-btn.active { background: rgba(88,166,255,0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
-
-    /* ── DECOMPOSITION SECTION ── */
-    .decomp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .decomp-family-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
-    }
-    .decomp-family-title {
-      font-size: 13px; font-weight: 600; color: var(--text-primary);
-      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
-    }
-    .decomp-bar-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 8px;
-    }
-    .decomp-bar-row:last-child { margin-bottom: 0; }
-    .decomp-mat-name {
-      font-size: 11px; color: var(--text-secondary);
-      width: 100px; flex-shrink: 0; text-align: right;
-    }
-    .decomp-bar-track {
-      flex: 1; height: 6px; background: var(--border);
-      border-radius: 3px; overflow: hidden;
-    }
-    .decomp-bar-fill {
-      height: 100%; border-radius: 3px; transition: width 0.5s;
-    }
-    .decomp-pct {
-      font-size: 11px; font-weight: 600; width: 36px; flex-shrink: 0;
-    }
-    .decomp-price {
-      font-size: 10px; color: var(--text-muted); width: 70px; flex-shrink: 0; text-align: right;
-    }
-    .decomp-change {
-      font-size: 10px; font-weight: 600; width: 50px; flex-shrink: 0; text-align: right;
-    }
-
-    /* ── HORIZONTAL BAR CHART FOR REPARTITION ── */
-    .hbar-section { display: flex; flex-direction: column; gap: 14px; width: 100%; }
-    .hbar-row { display: flex; flex-direction: column; gap: 4px; }
-    .hbar-label-row { display: flex; justify-content: space-between; align-items: baseline; }
-    .hbar-cat-label { font-size: 12px; font-weight: 600; }
-    .hbar-cat-stats { font-size: 11px; color: var(--text-secondary); }
-    .hbar-track { height: 22px; background: var(--border); border-radius: 4px; overflow: hidden; position: relative; }
-    .hbar-fill { height: 100%; border-radius: 4px; transition: width 0.6s; display: flex; align-items: center; justify-content: center; }
-    .hbar-fill-label { font-size: 10px; font-weight: 700; color: #0d1117; }
 
     /* ── FOOTER ── */
     .footer {
@@ -326,13 +263,11 @@
       .main-grid { grid-template-columns: 1fr; }
       .kpi-row   { grid-template-columns: repeat(2,1fr); }
       .bottom-grid { grid-template-columns: 1fr 1fr; }
-      .decomp-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 700px) {
       .kpi-row     { grid-template-columns: 1fr 1fr; }
       .bottom-grid { grid-template-columns: 1fr; }
       .container   { padding: 12px; }
-      .decomp-grid { grid-template-columns: 1fr; }
     }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -409,18 +344,9 @@
     <div class="card">
       <div class="card-header">
         <div class="card-title">💰 Cotations du marché</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <div class="period-group" id="bar-period-group">
-            <button class="period-btn" onclick="setBarPeriod(30,this)">1M</button>
-            <button class="period-btn active" onclick="setBarPeriod(90,this)">3M</button>
-            <button class="period-btn" onclick="setBarPeriod(180,this)">6M</button>
-            <button class="period-btn" onclick="setBarPeriod(365,this)">1AN</button>
-            <button class="period-btn" onclick="setBarPeriod(730,this)">2ANS</button>
-          </div>
-          <div class="toggle-group">
-            <button class="toggle-btn active" onclick="setView('table',this)">Tableau</button>
-            <button class="toggle-btn"        onclick="setView('chart',this)">Graphique</button>
-          </div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setView('table',this)">Tableau</button>
+          <button class="toggle-btn"        onclick="setView('chart',this)">Graphique</button>
         </div>
       </div>
       <div id="view-table">
@@ -467,17 +393,8 @@
   <!-- EVOLUTION CHART -->
   <div class="card" style="margin-bottom:24px;">
     <div class="card-header">
-      <div class="card-title">📉 Évolution des prix — <span id="evo-period-label">90 jours</span> (base 100)</div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <div class="period-group" id="evo-period-group">
-          <button class="period-btn" onclick="setEvoPeriod(30,this)">1M</button>
-          <button class="period-btn active" onclick="setEvoPeriod(90,this)">3M</button>
-          <button class="period-btn" onclick="setEvoPeriod(180,this)">6M</button>
-          <button class="period-btn" onclick="setEvoPeriod(365,this)">1AN</button>
-          <button class="period-btn" onclick="setEvoPeriod(730,this)">2ANS</button>
-        </div>
-        <div class="toggle-group" id="evo-toggles"></div>
-      </div>
+      <div class="card-title">📉 Évolution des prix — 90 jours (base 100)</div>
+      <div class="toggle-group" id="evo-toggles"></div>
     </div>
     <div class="card-body">
       <div class="chart-wrap" style="height:300px;"><canvas id="evo-chart"></canvas></div>
@@ -491,9 +408,12 @@
       <div class="card-body" style="padding-top:8px;"><div id="opport-list"></div></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">📊 Répartition variation 30j</div></div>
-      <div class="card-body" style="display:flex;align-items:center;">
-        <div class="hbar-section" id="hbar-section"></div>
+      <div class="card-header"><div class="card-title">🥧 Répartition variation 30j</div></div>
+      <div class="card-body" style="display:flex;align-items:center;gap:16px;">
+        <div style="position:relative;width:140px;height:140px;flex-shrink:0;">
+          <canvas id="donut-chart"></canvas>
+        </div>
+        <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:6px;"></div>
       </div>
     </div>
     <div class="card">
@@ -502,12 +422,477 @@
     </div>
   </div>
 
-  <!-- DECOMPOSITION MATIERES PREMIERES -->
-  <div class="card" style="margin-bottom:24px;">
-    <div class="card-header">
-      <div class="card-title">🧪 Décomposition matières premières par famille</div>
-    </div>
-    <div class="card-body">
-      <div class="decomp-grid" id="decomp-grid"></div>
-    </div>
-  </div>
+</div><!-- /container -->
+
+<footer class="footer">
+  <span>Atlas © 2026 — Données indicatives à titre de référence uniquement</span>
+  <span>Sources : FAO · CME Group · Euronext · INSEE · Actualisation quotidienne</span>
+</footer>
+
+<script>
+/* ═══════════════════════════════════
+   PRODUCT CATALOGUE
+═══════════════════════════════════ */
+const PRODUCTS = [
+  { id:'beurre-pl',   name:'Beurre plaquette 250g',  family:'Beurre',        unit:'€/100g',  base:1.85,  vol:0.06 },
+  { id:'beurre-vr',   name:'Beurre vrac industriel', family:'Beurre',        unit:'€/kg',    base:7.20,  vol:0.09 },
+  { id:'lait-ent',    name:'Lait entier UHT 1L',     family:'Lait',          unit:'€/L',     base:1.12,  vol:0.04 },
+  { id:'lait-pdr',    name:'Lait écrémé poudre',     family:'Lait',          unit:'€/100kg', base:345,   vol:0.07 },
+  { id:'cafe-ara',    name:'Café Arabica',            family:'Café',          unit:'¢USD/lb', base:198,   vol:0.12 },
+  { id:'cafe-rob',    name:'Café Robusta',            family:'Café',          unit:'USD/t',   base:2840,  vol:0.11 },
+  { id:'jo-conc',     name:'JO concentré surgelé',   family:"Jus d'orange",  unit:'¢USD/lb', base:312,   vol:0.14 },
+  { id:'jo-nfc',      name:'JO fraîcheur NFC',        family:"Jus d'orange",  unit:'€/L',     base:2.10,  vol:0.08 },
+  { id:'ble-meu',     name:'Blé meunier Euronext',   family:'Blé',           unit:'€/t',     base:224,   vol:0.09 },
+  { id:'ble-dur',     name:'Blé dur semoulier',       family:'Blé',           unit:'€/t',     base:298,   vol:0.10 },
+  { id:'porc-ue',     name:'Porc carcasse UE',        family:'Porc',          unit:'€/kg',    base:1.68,  vol:0.07 },
+  { id:'porc-fi',     name:'Filet de porc frais',     family:'Porc',          unit:'€/kg',    base:7.40,  vol:0.06 },
+  { id:'dinde-fi',    name:'Dinde filet FR',          family:'Dinde',         unit:'€/kg',    base:8.20,  vol:0.05 },
+  { id:'dinde-ca',    name:'Dinde carcasse',          family:'Dinde',         unit:'€/kg',    base:3.15,  vol:0.06 },
+  { id:'oeufs-pa',    name:'Œufs plein air cat A',   family:'Œufs',          unit:'€/unité', base:0.31,  vol:0.08 },
+  { id:'oeufs-bi',    name:'Œufs bio calibre M',     family:'Œufs',          unit:'€/unité', base:0.42,  vol:0.07 },
+  { id:'yaourt-na',   name:'Yaourt nature brassé',    family:'Yaourts',       unit:'€/pot',   base:0.28,  vol:0.05 },
+  { id:'yaourt-fr',   name:'Yaourt fruité 125g',      family:'Yaourts',       unit:'€/pot',   base:0.34,  vol:0.04 },
+  { id:'comp-po',     name:'Compote pomme maison',    family:'Compotes',      unit:'€/kg',    base:1.60,  vol:0.05 },
+  { id:'comp-ro',     name:'Compote fruits rouges',   family:'Compotes',      unit:'€/kg',    base:2.20,  vol:0.06 },
+  { id:'the-no',      name:'Thé noir Assam BOP',     family:'Thé',           unit:'USD/kg',  base:3.40,  vol:0.09 },
+  { id:'the-ve',      name:'Thé vert Sencha',         family:'Thé',           unit:'USD/kg',  base:7.80,  vol:0.08 },
+  { id:'vien-cr',     name:'Croissant beurre',        family:'Viennoiseries', unit:'€/unité', base:0.62,  vol:0.04 },
+  { id:'vien-pc',     name:'Pain au chocolat',        family:'Viennoiseries', unit:'€/unité', base:0.68,  vol:0.04 },
+];
+
+const EVO_COLORS = ['#58a6ff','#3fb950','#f85149','#d29922','#bc8cff'];
+const DAYS = 90;
+
+/* ═══════════════════════════════════
+   SEEDED PRNG
+═══════════════════════════════════ */
+function seededRng(seed) {
+  let s = seed >>> 0;
+  return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 0x100000000; };
+}
+
+function genSeries(p, seed) {
+  const rng = seededRng(seed);
+  const series = [p.base];
+  for (let i = 1; i < DAYS; i++) {
+    const d = (rng() - 0.48) * p.vol * series[i-1] * 0.35;
+    series.push(Math.max(series[i-1] + d, p.base * 0.5));
+  }
+  return series;
+}
+
+/* ═══════════════════════════════════
+   BUILD DATA
+═══════════════════════════════════ */
+const today = new Date();
+const dateLabels = Array.from({length: DAYS}, (_,i) => {
+  const d = new Date(today); d.setDate(d.getDate() - (DAYS-1-i));
+  return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+});
+
+const DATA = PRODUCTS.map((p, i) => {
+  const series = genSeries(p, i * 997 + 31);
+  const cur  = series[DAYS-1];
+  const w7   = series[DAYS-8];
+  const m30  = series[DAYS-31];
+  return { ...p, series, cur,
+    change7:  ((cur-w7)/w7)*100,
+    change30: ((cur-m30)/m30)*100 };
+});
+
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let currentFamily = 'all';
+let sortKey = 'change7';
+let sortAsc  = false;
+let evoChart  = null;
+let barChart  = null;
+let donutChart= null;
+let sparks    = {};
+
+function filtered() {
+  return currentFamily === 'all' ? DATA : DATA.filter(d => d.family === currentFamily);
+}
+function fmt(v, p=2) { return Number(v).toFixed(p); }
+function fmtChange(v) { return (v>=0?'+':'') + v.toFixed(1) + '%'; }
+function changeClass(v) { return v > 0.3 ? 'change-up' : v < -0.3 ? 'change-dn' : 'change-neu'; }
+function pDec(d) { return d.base > 100 ? 0 : 2; }
+
+/* ═══════════════════════════════════
+   KPIs
+═══════════════════════════════════ */
+function renderKPIs() {
+  const fd = filtered();
+  document.getElementById('kpi-total').textContent = fd.length;
+  document.getElementById('kpi-sub-total').textContent = currentFamily==='all' ? 'sur 13 familles' : 'produits filtrés';
+  document.getElementById('kpi-up').textContent = fd.filter(d=>d.change7>3).length;
+  document.getElementById('kpi-dn').textContent = fd.filter(d=>d.change7<-3).length;
+  const avg = fd.reduce((s,d)=>s+Math.abs(d.change30),0)/fd.length;
+  const volaEl = document.getElementById('kpi-vola');
+  volaEl.textContent = avg.toFixed(1)+'%';
+  volaEl.style.color = avg>8?'var(--accent-red)':avg>4?'var(--accent-orange)':'var(--accent-green)';
+  document.getElementById('kpi-vola-label').textContent =
+    avg>8?'⚠ Forte volatilité':avg>4?'⚡ Volatilité modérée':'✓ Marché calme';
+}
+
+/* ═══════════════════════════════════
+   PRICE TABLE
+═══════════════════════════════════ */
+function renderTable() {
+  Object.values(sparks).forEach(c=>c.destroy()); sparks={};
+  const tbody = document.getElementById('price-tbody');
+  tbody.innerHTML = '';
+  const fd = [...filtered()].sort((a,b)=>{
+    let va=a[sortKey], vb=b[sortKey];
+    if(sortKey==='name'){ va=a.name; vb=b.name; }
+    if(sortKey==='price'){ va=a.cur; vb=b.cur; }
+    if(typeof va==='string') return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+    return sortAsc?va-vb:vb-va;
+  });
+  fd.forEach(d=>{
+    const sid='sp-'+d.id;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div class="product-name">${d.name}</div><div class="product-family">${d.family}</div></td>
+      <td><div class="price-val">${fmt(d.cur,pDec(d))}</div><div class="price-unit">${d.unit}</div></td>
+      <td class="${changeClass(d.change7)}">${fmtChange(d.change7)}</td>
+      <td class="${changeClass(d.change30)}">${fmtChange(d.change30)}</td>
+      <td><canvas id="${sid}" class="trend-spark" width="80" height="28"></canvas></td>
+    `;
+    tbody.appendChild(tr);
+    requestAnimationFrame(()=>drawSpark(sid, d));
+  });
+}
+
+function drawSpark(id, d) {
+  const el = document.getElementById(id); if(!el) return;
+  const sl = d.series.slice(-30);
+  const color = d.change30>=0?'#f85149':'#3fb950';
+  sparks[id] = new Chart(el,{
+    type:'line',
+    data:{ labels:sl.map((_,i)=>i),
+      datasets:[{data:sl, borderColor:color, borderWidth:1.5,
+        pointRadius:0, fill:true, backgroundColor:color+'18', tension:0.4}]},
+    options:{ responsive:false, animation:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}} }
+  });
+}
+
+function sortTable(key) {
+  if(sortKey===key) sortAsc=!sortAsc; else { sortKey=key; sortAsc=key==='name'; }
+  renderTable();
+}
+
+/* ═══════════════════════════════════
+   BAR CHART
+═══════════════════════════════════ */
+function renderBarChart() {
+  const fd = filtered().slice(0,12);
+  const ctx = document.getElementById('bar-chart').getContext('2d');
+  if(barChart) barChart.destroy();
+  barChart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels: fd.map(d=>d.name.length>14?d.name.slice(0,14)+'…':d.name),
+      datasets:[{
+        label:'Variation 7j (%)',
+        data: fd.map(d=>+d.change7.toFixed(2)),
+        backgroundColor: fd.map(d=>d.change7>3?'#f85149':d.change7<-3?'#3fb950':'#58a6ff'),
+        borderRadius:4, borderSkipped:false
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ backgroundColor:'#1c2330', borderColor:'#30363d', borderWidth:1,
+          callbacks:{label:c=>` ${c.parsed.y>0?'+':''}${c.parsed.y.toFixed(2)}%`} }},
+      scales:{
+        x:{ grid:{color:'var(--chart-grid)'}, ticks:{color:'#8b949e',font:{size:10},maxRotation:35} },
+        y:{ grid:{color:'var(--chart-grid)'}, ticks:{color:'#8b949e',font:{size:11},callback:v=>(v>0?'+':'')+v+'%'} }
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════
+   EVOLUTION CHART
+═══════════════════════════════════ */
+function renderEvo() {
+  const fd = filtered().slice(0,5);
+  // update toggle buttons
+  const tog = document.getElementById('evo-toggles');
+  tog.innerHTML = '';
+  fd.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='toggle-btn active';
+    btn.style.borderColor=EVO_COLORS[i];
+    btn.style.color=EVO_COLORS[i];
+    btn.style.background=EVO_COLORS[i]+'22';
+    btn.textContent = p.name.length>16?p.name.slice(0,16)+'…':p.name;
+    btn.onclick=()=>{ toggleEvoDataset(i,btn,EVO_COLORS[i]); };
+    tog.appendChild(btn);
+  });
+
+  const ctx = document.getElementById('evo-chart').getContext('2d');
+  if(evoChart) evoChart.destroy();
+  evoChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels: dateLabels,
+      datasets: fd.map((p,i)=>{
+        const b0=p.series[0];
+        return {
+          label:p.name,
+          data: p.series.map(v=>+((v/b0*100).toFixed(2))),
+          borderColor: EVO_COLORS[i],
+          backgroundColor: EVO_COLORS[i]+'10',
+          borderWidth:2, pointRadius:0, pointHoverRadius:4,
+          tension:0.35, fill:false
+        };
+      })
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{ backgroundColor:'#1c2330', borderColor:'#30363d', borderWidth:1,
+          titleColor:'#e6edf3', bodyColor:'#8b949e',
+          callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}`} }
+      },
+      scales:{
+        x:{ grid:{color:'var(--chart-grid)'}, ticks:{color:'#8b949e',maxTicksLimit:10,font:{size:11}} },
+        y:{ grid:{color:'var(--chart-grid)'},
+          ticks:{color:'#8b949e',font:{size:11}},
+          title:{display:true,text:'Indice (base 100)',color:'#8b949e',font:{size:11}} }
+      }
+    }
+  });
+}
+
+function toggleEvoDataset(idx, btn, color) {
+  if(!evoChart) return;
+  const meta = evoChart.getDatasetMeta(idx);
+  meta.hidden = !meta.hidden;
+  evoChart.update();
+  if(meta.hidden) {
+    btn.style.background='transparent'; btn.style.color='var(--text-muted)'; btn.style.borderColor='var(--border)';
+  } else {
+    btn.style.background=color+'22'; btn.style.color=color; btn.style.borderColor=color;
+  }
+}
+
+/* ═══════════════════════════════════
+   ALERTS
+═══════════════════════════════════ */
+function renderAlerts() {
+  const alerts = [];
+  filtered().forEach(d=>{
+    if(d.change7>5)       alerts.push({type:'up',  d, msg:`+${d.change7.toFixed(1)}% en 7j — tension approvisionnement`});
+    else if(d.change7>3)  alerts.push({type:'warn', d, msg:`+${d.change7.toFixed(1)}% — surveiller l'évolution`});
+    else if(d.change7<-4) alerts.push({type:'dn',  d, msg:`${d.change7.toFixed(1)}% — opportunité d'achat spot`});
+  });
+  alerts.sort((a,b)=>Math.abs(b.d.change7)-Math.abs(a.d.change7));
+  document.getElementById('alert-count').textContent = alerts.length+' alertes actives';
+  const list = document.getElementById('alert-list');
+  list.innerHTML = '';
+  if(!alerts.length){
+    list.innerHTML='<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Aucune alerte sur la sélection</div>';
+    return;
+  }
+  alerts.slice(0,7).forEach(a=>{
+    const cls=a.type==='up'?'alert-up':a.type==='dn'?'alert-dn':'alert-warn';
+    const ico=a.type==='up'?'🔺':a.type==='dn'?'🔻':'⚠️';
+    const div=document.createElement('div');
+    div.className='alert-item '+cls;
+    div.innerHTML=`<span class="alert-icon">${ico}</span>
+      <div class="alert-body">
+        <div class="alert-title">${a.d.name}</div>
+        <div class="alert-desc">${a.msg}</div>
+        <div class="alert-time">Mis à jour aujourd'hui</div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════
+   GAUGE
+═══════════════════════════════════ */
+function renderGauge() {
+  const fd=[...filtered()].sort((a,b)=>b.change30-a.change30).slice(0,6);
+  const wrap=document.getElementById('gauge-wrap'); wrap.innerHTML='';
+  fd.forEach(d=>{
+    const pct=Math.min(100,Math.max(5,50+d.change30*3));
+    const color=pct>65?'var(--accent-red)':pct>45?'var(--accent-orange)':'var(--accent-green)';
+    const div=document.createElement('div'); div.className='gauge-item';
+    div.innerHTML=`<div class="gauge-header">
+        <span class="gauge-name">${d.name.length>24?d.name.slice(0,24)+'…':d.name}</span>
+        <span style="font-weight:600;font-size:11px;color:${color}">${fmtChange(d.change30)}</span>
+      </div>
+      <div class="gauge-bar"><div class="gauge-fill" style="width:${pct}%;background:${color}"></div></div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════
+   DONUT
+═══════════════════════════════════ */
+function renderDonut() {
+  const fd=filtered();
+  const up=fd.filter(d=>d.change30>3).length;
+  const dn=fd.filter(d=>d.change30<-3).length;
+  const neu=fd.length-up-dn;
+  const ctx=document.getElementById('donut-chart').getContext('2d');
+  if(donutChart) donutChart.destroy();
+  donutChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:['Hausse >3%','Stable','Baisse >3%'],
+      datasets:[{data:[up,neu,dn],backgroundColor:['#f85149','#484f58','#3fb950'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:false,cutout:'68%',
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#1c2330',borderColor:'#30363d',borderWidth:1}}}
+  });
+  document.getElementById('donut-legend').innerHTML=[
+    {l:'Hausse >3%',v:up,c:'var(--accent-red)'},
+    {l:'Stable',    v:neu,c:'var(--text-muted)'},
+    {l:'Baisse >3%',v:dn,c:'var(--accent-green)'},
+  ].map(x=>`<div style="display:flex;align-items:center;gap:8px;">
+    <span style="width:8px;height:8px;border-radius:50%;background:${x.c};flex-shrink:0"></span>
+    <span style="color:var(--text-secondary);font-size:11px;flex:1">${x.l}</span>
+    <span style="font-weight:600;font-size:12px;color:${x.c}">${x.v}</span>
+  </div>`).join('');
+}
+
+/* ═══════════════════════════════════
+   OPPORTUNITIES
+═══════════════════════════════════ */
+function renderOpportunities() {
+  const fd=[...filtered()].sort((a,b)=>a.change30-b.change30).slice(0,5);
+  const list=document.getElementById('opport-list'); list.innerHTML='';
+  if(!fd.length||fd[0].change30>=2){
+    list.innerHTML='<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Pas d\'opportunité identifiée</div>';
+    return;
+  }
+  fd.forEach(d=>{
+    const score=d.change30<-5?'high':d.change30<-2?'med':'low';
+    const label=score==='high'?'TOP':score==='med'?'BON':'MOD';
+    const div=document.createElement('div'); div.className='opport-item';
+    div.innerHTML=`<div class="opport-score score-${score}">${label}</div>
+      <div>
+        <div class="opport-name">${d.name}</div>
+        <div class="opport-detail">${d.family} · ${d.unit}</div>
+      </div>
+      <div class="opport-change change-dn">${fmtChange(d.change30)}</div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════
+   NEWS
+═══════════════════════════════════ */
+const NEWS = [
+  { src:'Reuters',        tag:'up',  fam:'Café',          title:"Arabica au plus bas depuis 2 ans — sécheresse persistante au Brésil", date:"Aujourd'hui, 09:14" },
+  { src:'FAO',            tag:'neu', fam:'Blé',           title:'Récoltes mondiales blé 2026 : prévisions en hausse de +2,3% (USDA)',  date:'Hier, 17:32' },
+  { src:'Euronext',       tag:'up',  fam:"Jus d'orange",  title:"JO concentré bondit à 312 ¢/lb — stocks floridiens sous pression",    date:'Hier, 14:05' },
+  { src:'FranceAgriMer',  tag:'neu', fam:'Œufs',          title:'Influenza aviaire : levée partielle des restrictions Bretagne/PDL',   date:'Il y a 2j' },
+  { src:'FranceAgriMer',  tag:'dn',  fam:'Porc',          title:'Marché du porc : repli technique après 3 semaines de hausse',         date:'Il y a 2j' },
+  { src:'Atla',           tag:'dn',  fam:'Beurre',        title:'Beurre européen : recul en dépôt malgré demande soutenue industrie',  date:'Il y a 3j' },
+  { src:'Agreste',        tag:'up',  fam:'Viennoiseries', title:'Beurre + farine : impact fort sur la marge des artisans boulangers',  date:'Il y a 3j' },
+  { src:'ICO',            tag:'neu', fam:'Thé',           title:'Thé Inde : légère tension sur origines haut de gamme Assam/Darjeeling',date:'Il y a 4j' },
+  { src:'Cniel',          tag:'up',  fam:'Lait',          title:'Collecte laitière en France : légère baisse estivale confirmée',      date:'Il y a 4j' },
+  { src:'OFPM',           tag:'neu', fam:'Dinde',         title:'Filière dinde : campagne 2026 en ligne avec les objectifs syndicaux', date:'Il y a 5j' },
+];
+
+function renderNews() {
+  const list=document.getElementById('news-list'); list.innerHTML='';
+  const fd=currentFamily==='all'?NEWS:NEWS.filter(n=>n.fam===currentFamily);
+  if(!fd.length){
+    list.innerHTML='<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Aucune actualité filtrée</div>';
+    return;
+  }
+  fd.forEach(n=>{
+    const tc=n.tag==='up'?'tag-up':n.tag==='dn'?'tag-dn':'tag-neu';
+    const tl=n.tag==='up'?'▲ Hausse':n.tag==='dn'?'▼ Baisse':'● Neutre';
+    const div=document.createElement('div'); div.className='news-item';
+    div.innerHTML=`<div class="news-source">${n.src}</div>
+      <div class="news-title"><span class="news-tag ${tc}">${tl}</span>${n.title}</div>
+      <div class="news-meta">${n.date}</div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════
+   FILTER / VIEW
+═══════════════════════════════════ */
+function filterFamily(family, el) {
+  currentFamily=family;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function setView(v, btn) {
+  document.querySelectorAll('.toggle-group .toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-table').style.display = v==='table'?'':'none';
+  document.getElementById('view-chart').style.display  = v==='chart'?'':'none';
+  if(v==='chart') renderBarChart();
+}
+
+/* ═══════════════════════════════════
+   REFRESH / EXPORT
+═══════════════════════════════════ */
+function refreshData() {
+  DATA.forEach(d=>{
+    const delta=(Math.random()-0.5)*d.vol*d.cur*0.1;
+    d.series.push(Math.max(d.cur+delta, d.base*0.6));
+    d.series.shift();
+    d.cur=d.series[DAYS-1];
+    d.change7 =((d.cur-d.series[DAYS-8])/d.series[DAYS-8])*100;
+    d.change30=((d.cur-d.series[DAYS-31])/d.series[DAYS-31])*100;
+  });
+  renderAll();
+}
+
+function exportCSV() {
+  const rows=[['Produit','Famille','Unité','Prix actuel','Var 7j (%)','Var 30j (%)']];
+  filtered().forEach(d=>rows.push([d.name,d.family,d.unit,fmt(d.cur,pDec(d)),fmtChange(d.change7),fmtChange(d.change30)]));
+  const csv=rows.map(r=>r.map(v=>'"'+v+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='atlas_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+function updateTime() {
+  document.getElementById('update-time').textContent=
+    new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ═══════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════ */
+function renderAll() {
+  renderKPIs();
+  renderTable();
+  renderAlerts();
+  renderGauge();
+  renderEvo();
+  renderDonut();
+  renderOpportunities();
+  renderNews();
+  updateTime();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  Chart.defaults.color='#8b949e';
+  Chart.defaults.borderColor='rgba(48,54,61,0.6)';
+  renderAll();
+  setInterval(updateTime, 60000);
+  setInterval(refreshData, 300000);
+});
+</script>
+</body>
+</html>
