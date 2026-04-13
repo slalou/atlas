@@ -361,6 +361,34 @@
       white-space: nowrap;
     }
 
+    /* ── LOADING / ERROR ── */
+    .loading-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .loading-msg .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-msg {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--accent-red);
+      font-size: 12px;
+      background: rgba(248,81,73,0.06);
+      border: 1px solid rgba(248,81,73,0.2);
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+
     /* ── FOOTER ── */
     .footer {
       border-top: 1px solid var(--border); padding: 16px 24px;
@@ -482,21 +510,4 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="decomp-grid" id="decomp-grid"></div>
-    </div>
-  </div>
-
-  <!-- MAIN GRID -->
-  <div class="main-grid">
-
-    <!-- TABLE / CHART -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">💰 Cotations du marché</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <div class="period-selector" id="cotation-period">
-            <button class="period-btn active" data-days="30" onclick="setCotationPeriod(30,this)">1m</button>
-            <button class="period-btn" data-days="90" onclick="setCotationPeriod(90,this)">3m</button>
-            <button class="period-btn" data-days="180" onclick="setCotationPeriod(180,this)">6m</button>
-            <button class="period-btn" data-days="365" onclick="setCotationPeriod(365,this)">1an</button>
-            <button class="period-btn" data-days="730" onclick="setCotationPeriod(730,this)">2ans</button
+      <div id="decomp-loading" class="loading-msg"><div class="spinner"></div><br>Chargement des données…</div
