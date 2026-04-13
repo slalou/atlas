@@ -430,6 +430,9 @@
           </thead>
           <tbody id="price-tbody"></tbody>
         </table>
+        <div id="mpf-status" style="padding:6px 14px 8px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;">
+          <span style="opacity:0.6">⟳</span> Chargement cotation porc (marche-porc-francais.com)…
+        </div>
       </div>
       <div id="view-chart" style="display:none;padding:16px 20px;">
         <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
@@ -532,7 +535,7 @@ const PRODUCTS = [
   { id:'jo-nfc',      name:'JO fraîcheur NFC',        family:"Jus d'orange",  unit:'€/L',     base:2.10,  vol:0.08 },
   { id:'ble-meu',     name:'Blé meunier Euronext',   family:'Blé',           unit:'€/t',     base:224,   vol:0.09 },
   { id:'ble-dur',     name:'Blé dur semoulier',       family:'Blé',           unit:'€/t',     base:298,   vol:0.10 },
-  { id:'porc-ue',     name:'Porc carcasse UE',        family:'Porc',          unit:'€/kg',    base:1.68,  vol:0.07 },
+  { id:'porc-ue',     name:'Porc carcasse UE',        family:'Porc',          unit:'€/kg',    base:1.433, vol:0.05 },
   { id:'porc-fi',     name:'Filet de porc frais',     family:'Porc',          unit:'€/kg',    base:7.40,  vol:0.06 },
   { id:'dinde-fi',    name:'Dinde filet FR',          family:'Dinde',         unit:'€/kg',    base:8.20,  vol:0.05 },
   { id:'dinde-ca',    name:'Dinde carcasse',          family:'Dinde',         unit:'€/kg',    base:3.15,  vol:0.06 },
@@ -644,6 +647,17 @@ const DATA = PRODUCTS.map((p, i) => {
     change7:  ((cur-w7)/w7)*100,
     change30: ((cur-m30)/m30)*100 };
 });
+
+/* Normalise porc-ue : la série synthétique se termine à 1,433 €/kg (valeur officielle MPF) */
+(function() {
+  const p = DATA.find(d => d.id === 'porc-ue');
+  if (!p) return;
+  const factor = p.base / p.cur;
+  p.series = p.series.map(v => +(v * factor).toFixed(4));
+  p.cur = p.base;
+  p.change7  = ((p.cur - p.series[MAX_DAYS - 8])  / p.series[MAX_DAYS - 8])  * 100;
+  p.change30 = ((p.cur - p.series[MAX_DAYS - 31]) / p.series[MAX_DAYS - 31]) * 100;
+})();
 
 /* ═══════════════════════════════════
    STATE
@@ -1129,6 +1143,60 @@ function renderNews() {
 }
 
 /* ═══════════════════════════════════
+   LIVE FETCH — Marché du Porc Français
+═══════════════════════════════════ */
+async function fetchMPFCotation() {
+  const statusEl = document.getElementById('mpf-status');
+  const setStatus = (html, color) => {
+    if (statusEl) { statusEl.innerHTML = html; statusEl.style.color = color || ''; }
+  };
+  try {
+    const proxy  = 'https://api.allorigins.win/get?url=';
+    const target = 'https://www.marche-porc-francais.com/cotations/';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch(proxy + encodeURIComponent(target), { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+    const { contents } = await res.json();
+
+    /* Extraire le prix : <div class="MontantDerniereCotation">1,433 € */
+    const priceMatch = contents.match(/class="MontantDerniereCotation">\s*([\d,]+)\s*€/);
+    if (!priceMatch) throw new Error('sélecteur MontantDerniereCotation introuvable');
+    const price = parseFloat(priceMatch[1].replace(',', '.'));
+    if (isNaN(price) || price < 0.5 || price > 5) throw new Error('valeur hors limites : ' + price);
+
+    /* Extraire la date */
+    const dateMatch = contents.match(/class="DateDerniereCotation">([^<]+)</);
+    const dateStr = dateMatch ? dateMatch[1].trim() : '';
+
+    /* Mettre à jour DATA porc-ue */
+    const p = DATA.find(d => d.id === 'porc-ue');
+    if (p) {
+      p.series[MAX_DAYS - 1] = price;
+      p.cur    = price;
+      p.change7  = ((p.cur - p.series[MAX_DAYS - 8])  / p.series[MAX_DAYS - 8])  * 100;
+      p.change30 = ((p.cur - p.series[MAX_DAYS - 31]) / p.series[MAX_DAYS - 31]) * 100;
+    }
+
+    setStatus(
+      `<a href="https://www.marche-porc-francais.com/cotations/" target="_blank" rel="noopener"
+         style="color:var(--accent-green);text-decoration:none;font-weight:600">
+         ✓ Porc carcasse : ${price.toFixed(3)} €/kg — Source live : marche-porc-francais.com
+       </a>${dateStr ? ' <span style="color:var(--text-muted)">(' + dateStr + ')</span>' : ''}`,
+      'inherit'
+    );
+    renderAll();
+  } catch (e) {
+    console.warn('MPF fetch failed:', e.message);
+    setStatus(
+      '◦ Porc : valeur indicative 1,433 €/kg — <a href="https://www.marche-porc-francais.com/cotations/" target="_blank" rel="noopener" style="color:var(--accent-blue);text-decoration:none">marche-porc-francais.com</a> (fetch CORS bloqué)',
+      'var(--text-muted)'
+    );
+  }
+}
+
+/* ═══════════════════════════════════
    FILTER / VIEW
 ═══════════════════════════════════ */
 function filterFamily(family, el) {
@@ -1201,8 +1269,10 @@ document.addEventListener('DOMContentLoaded', () => {
   Chart.defaults.color='#8b949e';
   Chart.defaults.borderColor='rgba(48,54,61,0.6)';
   renderAll();
+  fetchMPFCotation();                        // cotation live Porc FR
   setInterval(updateTime, 60000);
   setInterval(refreshData, 300000);
+  setInterval(fetchMPFCotation, 3600000);    // rafraîchissement toutes les heures
 });
 </script>
 </body>
