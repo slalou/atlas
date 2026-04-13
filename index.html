@@ -310,6 +310,55 @@
       content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block;
     }
 
+    /* ── DEPLOY BANNER ── */
+    .deploy-banner {
+      background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(88,166,255,0.12));
+      border: 1px solid var(--accent-green);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      animation: deploySlideIn 0.5s ease-out;
+    }
+    @keyframes deploySlideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .deploy-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .deploy-icon {
+      width: 40px; height: 40px;
+      background: rgba(63,185,80,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .deploy-info { display: flex; flex-direction: column; gap: 2px; }
+    .deploy-title { font-size: 14px; font-weight: 700; color: var(--accent-green); }
+    .deploy-subtitle { font-size: 12px; color: var(--text-secondary); }
+    .deploy-meta { display: flex; gap: 16px; margin-top: 4px; }
+    .deploy-meta-item { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .deploy-meta-item .dot-green { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; display: inline-block; }
+    .deploy-status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(63,185,80,0.2);
+      color: var(--accent-green);
+      border: 1px solid rgba(63,185,80,0.4);
+      white-space: nowrap;
+    }
+
     /* ── FOOTER ── */
     .footer {
       border-top: 1px solid var(--border); padding: 16px 24px;
@@ -328,6 +377,9 @@
       .bottom-grid { grid-template-columns: 1fr; }
       .container   { padding: 12px; }
       .decomp-grid { grid-template-columns: 1fr; }
+      .deploy-banner { flex-direction: column; text-align: center; }
+      .deploy-banner-left { flex-direction: column; }
+      .deploy-meta { justify-content: center; }
     }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -352,6 +404,24 @@
 </header>
 
 <div class="container">
+
+  <!-- DEPLOY BANNER -->
+  <div class="deploy-banner" id="deploy-banner">
+    <div class="deploy-banner-left">
+      <div class="deploy-icon">🚀</div>
+      <div class="deploy-info">
+        <div class="deploy-title">Déploiement réussi</div>
+        <div class="deploy-subtitle">Atlas v2.4.0 — Dashboard Veille Marchés Alimentaires</div>
+        <div class="deploy-meta">
+          <span class="deploy-meta-item"><span class="dot-green"></span> Production</span>
+          <span class="deploy-meta-item" id="deploy-time">⏱ —</span>
+          <span class="deploy-meta-item">📦 Build #1247</span>
+          <span class="deploy-meta-item">⚡ 0 erreurs</span>
+        </div>
+      </div>
+    </div>
+    <div class="deploy-status-badge">✓ Live</div>
+  </div>
 
   <!-- FILTERS -->
   <div class="filter-section">
@@ -441,66 +511,4 @@
               <th>Tendance 30j</th>
             </tr>
           </thead>
-          <tbody id="price-tbody"></tbody>
-        </table>
-      </div>
-      <div id="view-chart" style="display:none;padding:16px 20px;">
-        <div class="chart-wrap"><canvas id="bar-chart"></canvas></div>
-      </div>
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">⚠️ Alertes Prix</div>
-          <span id="alert-count" style="font-size:11px;color:var(--text-secondary)">—</span>
-        </div>
-        <div class="card-body">
-          <div class="alert-list" id="alert-list"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">📈 Pression d'achat</div>
-        </div>
-        <div class="card-body">
-          <div class="gauge-wrap" id="gauge-wrap"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- EVOLUTION CHART -->
-  <div class="card" style="margin-bottom:24px;">
-    <div class="card-header">
-      <div class="card-title">📉 Évolution des prix <span id="evo-period-label" style="color:var(--text-secondary);font-weight:400;font-size:11px;margin-left:6px;">— 90 jours (base 100)</span></div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <div class="period-selector" id="evo-period">
-          <button class="period-btn" data-days="7" onclick="setEvoPeriod(7,this)">7j</button>
-          <button class="period-btn" data-days="14" onclick="setEvoPeriod(14,this)">14j</button>
-          <button class="period-btn" data-days="30" onclick="setEvoPeriod(30,this)">30j</button>
-          <button class="period-btn" data-days="60" onclick="setEvoPeriod(60,this)">60j</button>
-          <button class="period-btn active" data-days="90" onclick="setEvoPeriod(90,this)">90j</button>
-        </div>
-        <div class="toggle-group" id="evo-toggles"></div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="chart-wrap" style="height:300px;"><canvas id="evo-chart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- BOTTOM GRID -->
-  <div class="bottom-grid">
-    <div class="card">
-      <div class="card-header"><div class="card-title">🎯 Opportunités d'achat</div></div>
-      <div class="card-body" style="padding-top:8px;"><div id="opport-list"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title">🥧 Répartition variation 30j</div></div>
-      <div class="card-body" style="display:flex;align-items:center;gap:16px;">
-        <div style="position:relative;width:140px;height:140px;flex-shrink:0;">
-          <canvas id="donut-chart"></canvas>
-        </div>
-        <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:6px;
+          <tbody id="price-
