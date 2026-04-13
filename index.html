@@ -430,8 +430,11 @@
           </thead>
           <tbody id="price-tbody"></tbody>
         </table>
-        <div id="mpf-status" style="padding:6px 14px 8px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;">
-          <span style="opacity:0.6">⟳</span> Chargement cotation porc (marche-porc-francais.com)…
+        <div style="border-top:1px solid var(--border);padding:6px 14px 8px;display:flex;flex-direction:column;gap:3px;font-size:10px;">
+          <div id="mpf-status"   style="color:var(--text-muted);display:flex;align-items:center;gap:5px;"><span style="opacity:0.5">⟳</span> Chargement cotation porc…</div>
+          <div id="yahoo-status" style="color:var(--text-muted);display:flex;align-items:center;gap:5px;"><span style="opacity:0.5">⟳</span> Chargement Yahoo Finance (KC=F · OJ=F · ZW=F)…</div>
+          <div id="rnm-status"   style="color:var(--text-muted);display:flex;align-items:center;gap:5px;"><span style="opacity:0.5">⟳</span> Chargement RNM FranceAgriMer…</div>
+          <div id="rss-status"   style="color:var(--text-muted);display:flex;align-items:center;gap:5px;"><span style="opacity:0.5">⟳</span> Chargement flux RSS actualités…</div>
         </div>
       </div>
       <div id="view-chart" style="display:none;padding:16px 20px;">
@@ -664,17 +667,17 @@ const DATA = PRODUCTS.map((p, i) => {
 ═══════════════════════════════════ */
 /* Catalogue des matières pour le graphique évolution */
 const EVO_PRODUCTS = [
-  { pid:'beurre-pl', label:'Beurre plaquette',      unit:'€/100g',     src:'FranceAgriMer',            factor:1    },
-  { pid:'beurre-vr', label:'Beurre vrac',            unit:'€/kg',       src:'FranceAgriMer',            factor:1    },
-  { pid:'lait-ent',  label:'Lait cru',               unit:'€/1000L',    src:'FranceAgriMer',            factor:1000 },
-  { pid:'porc-ue',   label:'Porc carcasse',          unit:'€/kg',       src:'marche-porc-francais.com', factor:1    },
-  { pid:'oeufs-pa',  label:'Œufs plein air',         unit:'€/unité',    src:'RNM FranceAgriMer',        factor:1    },
-  { pid:'cafe-ara',  label:'Café Arabica',            unit:'cts USD/lb', src:'Yahoo Finance (KC=F)',     factor:1    },
-  { pid:'cafe-rob',  label:'Café Robusta',            unit:'USD/tonne',  src:'Yahoo Finance (RC=F)',     factor:1    },
-  { pid:'ble-meu',   label:'Blé meunier',            unit:'€/tonne',    src:'Euronext',                 factor:1    },
-  { pid:'ble-dur',   label:'Blé dur',                unit:'€/tonne',    src:'Euronext',                 factor:1    },
-  { pid:'jo-conc',   label:"Jus d'orange (FCOJ)",    unit:'cts USD/lb', src:'Yahoo Finance (OJ=F)',     factor:1    },
-  { pid:'dinde-fi',  label:'Dinde filet',            unit:'€/kg',       src:'RNM FranceAgriMer',        factor:1    },
+  { pid:'beurre-pl', label:'Beurre plaquette',      unit:'€/100g',     src:'RNM FranceAgriMer · données J-1',          factor:1    },
+  { pid:'beurre-vr', label:'Beurre vrac',            unit:'€/kg',       src:'RNM FranceAgriMer · données J-1',          factor:1    },
+  { pid:'lait-ent',  label:'Lait cru',               unit:'€/1000L',    src:'RNM FranceAgriMer · données J-1',          factor:1000 },
+  { pid:'porc-ue',   label:'Porc carcasse',          unit:'€/kg',       src:'marche-porc-francais.com · données direct', factor:1    },
+  { pid:'oeufs-pa',  label:'Œufs plein air',         unit:'€/unité',    src:'RNM FranceAgriMer · données J-1',          factor:1    },
+  { pid:'cafe-ara',  label:'Café Arabica',            unit:'¢USD/lb',    src:'Yahoo Finance KC=F · diff. 15 min',        factor:1    },
+  { pid:'cafe-rob',  label:'Café Robusta',            unit:'USD/tonne',  src:'Indicatif (pas de flux live)',              factor:1    },
+  { pid:'ble-meu',   label:'Blé meunier',            unit:'€/tonne',    src:'Yahoo Finance ZW=F (CBOT) · diff. 15 min', factor:1    },
+  { pid:'ble-dur',   label:'Blé dur',                unit:'€/tonne',    src:'Indicatif (pas de flux live)',              factor:1    },
+  { pid:'jo-conc',   label:"Jus d'orange (FCOJ)",    unit:'¢USD/lb',    src:'Yahoo Finance OJ=F · diff. 15 min',        factor:1    },
+  { pid:'dinde-fi',  label:'Dinde filet',            unit:'€/kg',       src:'RNM FranceAgriMer · données J-1',          factor:1    },
 ];
 
 let currentFamily = 'all';
@@ -686,6 +689,7 @@ let evoChart   = null;
 let barChart   = null;
 let hbarChart  = null;
 let sparks     = {};
+let LIVE_NEWS  = [];   // populated by fetchRSSNews()
 
 function filtered() {
   return currentFamily === 'all' ? DATA : DATA.filter(d => d.family === currentFamily);
@@ -1123,76 +1127,259 @@ const NEWS = [
 ];
 
 function renderNews() {
-  const list=document.getElementById('news-list'); list.innerHTML='';
-  const fd=currentFamily==='all'?NEWS:NEWS.filter(n=>n.fam===currentFamily);
-  if(!fd.length){
-    list.innerHTML='<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Aucune actualité filtrée</div>';
+  const list = document.getElementById('news-list');
+  list.innerHTML = '';
+  /* use live RSS items if fetched, otherwise fallback to hardcoded NEWS */
+  const pool = LIVE_NEWS.length > 0 ? LIVE_NEWS : NEWS;
+  const fd = currentFamily === 'all'
+    ? pool
+    : pool.filter(n => n.fam === currentFamily || n.fam === null);
+  if (!fd.length) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:16px;">Aucune actualité filtrée</div>';
     return;
   }
-  fd.forEach(n=>{
-    const tc=n.tag==='up'?'tag-up':n.tag==='dn'?'tag-dn':'tag-neu';
-    const tl=n.tag==='up'?'▲ Hausse':n.tag==='dn'?'▼ Baisse':'● Neutre';
-    const div=document.createElement('div'); div.className='news-item';
-    div.setAttribute('role','link');
-    div.onclick=()=>window.open(n.url,'_blank','noopener,noreferrer');
-    div.innerHTML=`<div class="news-source">${n.src}</div>
+  fd.slice(0, 8).forEach(n => {
+    const tc = n.tag === 'up' ? 'tag-up' : n.tag === 'dn' ? 'tag-dn' : 'tag-neu';
+    const tl = n.tag === 'up' ? '▲ Hausse' : n.tag === 'dn' ? '▼ Baisse' : '● Neutre';
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.setAttribute('role', 'link');
+    div.onclick = () => window.open(n.url, '_blank', 'noopener,noreferrer');
+    div.innerHTML = `<div class="news-source">${n.src}</div>
       <div class="news-title"><span class="news-tag ${tc}">${tl}</span>${n.title}</div>
-      <div class="news-meta">${n.date} &nbsp;·&nbsp; <span style="color:var(--accent-blue);font-size:10px">↗ lire l'article</span></div>`;
+      <div class="news-meta">${n.date}&nbsp;·&nbsp;<span style="color:var(--accent-blue);font-size:10px">↗ lire l'article</span></div>`;
     list.appendChild(div);
   });
+}
+
+/* ═══════════════════════════════════
+   HELPERS — Live fetch shared
+═══════════════════════════════════ */
+function applyLivePrice(pid, price) {
+  const p = DATA.find(d => d.id === pid);
+  if (!p || isNaN(price) || price <= 0) return false;
+  p.series[MAX_DAYS - 1] = price;
+  p.cur    = price;
+  p.change7  = ((p.cur - p.series[MAX_DAYS - 8])  / p.series[MAX_DAYS - 8])  * 100;
+  p.change30 = ((p.cur - p.series[MAX_DAYS - 31]) / p.series[MAX_DAYS - 31]) * 100;
+  return true;
+}
+function setStatus(id, html, color) {
+  const el = document.getElementById(id);
+  if (el) { el.innerHTML = html; if (color) el.style.color = color; }
 }
 
 /* ═══════════════════════════════════
    LIVE FETCH — Marché du Porc Français
 ═══════════════════════════════════ */
 async function fetchMPFCotation() {
-  const statusEl = document.getElementById('mpf-status');
-  const setStatus = (html, color) => {
-    if (statusEl) { statusEl.innerHTML = html; statusEl.style.color = color || ''; }
-  };
   try {
     const proxy  = 'https://api.allorigins.win/get?url=';
     const target = 'https://www.marche-porc-francais.com/cotations/';
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch(proxy + encodeURIComponent(target), { signal: controller.signal });
-    clearTimeout(timer);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
+    const res = await fetch(proxy + encodeURIComponent(target), { signal: ctrl.signal });
+    clearTimeout(t);
     if (!res.ok) throw new Error('proxy HTTP ' + res.status);
     const { contents } = await res.json();
-
-    /* Extraire le prix : <div class="MontantDerniereCotation">1,433 € */
-    const priceMatch = contents.match(/class="MontantDerniereCotation">\s*([\d,]+)\s*€/);
-    if (!priceMatch) throw new Error('sélecteur MontantDerniereCotation introuvable');
-    const price = parseFloat(priceMatch[1].replace(',', '.'));
-    if (isNaN(price) || price < 0.5 || price > 5) throw new Error('valeur hors limites : ' + price);
-
-    /* Extraire la date */
-    const dateMatch = contents.match(/class="DateDerniereCotation">([^<]+)</);
-    const dateStr = dateMatch ? dateMatch[1].trim() : '';
-
-    /* Mettre à jour DATA porc-ue */
-    const p = DATA.find(d => d.id === 'porc-ue');
-    if (p) {
-      p.series[MAX_DAYS - 1] = price;
-      p.cur    = price;
-      p.change7  = ((p.cur - p.series[MAX_DAYS - 8])  / p.series[MAX_DAYS - 8])  * 100;
-      p.change30 = ((p.cur - p.series[MAX_DAYS - 31]) / p.series[MAX_DAYS - 31]) * 100;
-    }
-
-    setStatus(
+    const priceM = contents.match(/class="MontantDerniereCotation">\s*([\d,]+)\s*€/);
+    if (!priceM) throw new Error('sélecteur introuvable');
+    const price = parseFloat(priceM[1].replace(',', '.'));
+    if (price < 0.5 || price > 5) throw new Error('valeur hors limites');
+    const dateM = contents.match(/class="DateDerniereCotation">([^<]+)</);
+    const dateStr = dateM ? dateM[1].trim() : '';
+    applyLivePrice('porc-ue', price);
+    setStatus('mpf-status',
       `<a href="https://www.marche-porc-francais.com/cotations/" target="_blank" rel="noopener"
          style="color:var(--accent-green);text-decoration:none;font-weight:600">
-         ✓ Porc carcasse : ${price.toFixed(3)} €/kg — Source live : marche-porc-francais.com
-       </a>${dateStr ? ' <span style="color:var(--text-muted)">(' + dateStr + ')</span>' : ''}`,
-      'inherit'
-    );
+         ✓ Porc direct : ${price.toFixed(3)} €/kg</a>${dateStr ? ' <span style="color:var(--text-muted)">(' + dateStr + ')</span>' : ''}`,
+      'inherit');
     renderAll();
   } catch (e) {
     console.warn('MPF fetch failed:', e.message);
-    setStatus(
-      '◦ Porc : valeur indicative 1,433 €/kg — <a href="https://www.marche-porc-francais.com/cotations/" target="_blank" rel="noopener" style="color:var(--accent-blue);text-decoration:none">marche-porc-francais.com</a> (fetch CORS bloqué)',
-      'var(--text-muted)'
+    setStatus('mpf-status',
+      '◦ Porc : <a href="https://www.marche-porc-francais.com/cotations/" target="_blank" rel="noopener" style="color:var(--accent-blue);text-decoration:none">marche-porc-francais.com</a> inaccessible',
+      'var(--text-muted)');
+  }
+}
+
+/* ═══════════════════════════════════
+   LIVE FETCH — Yahoo Finance (KC=F, OJ=F, ZW=F)
+═══════════════════════════════════ */
+async function fetchYahooTicker(ticker) {
+  const base = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  for (const url of [base, `https://corsproxy.io/?${encodeURIComponent(base)}`]) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 7000);
+      const r = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!r.ok) continue;
+      const j = await r.json();
+      const meta = j?.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice != null) return meta;
+    } catch { /* essai suivant */ }
+  }
+  return null;
+}
+
+async function fetchAllYahoo() {
+  const [kcMeta, ojMeta, zwMeta, fxMeta] = await Promise.all([
+    fetchYahooTicker('KC=F'),
+    fetchYahooTicker('OJ=F'),
+    fetchYahooTicker('ZW=F'),
+    fetchYahooTicker('EURUSD=X'),
+  ]);
+  const eurusd = fxMeta?.regularMarketPrice ?? 1.08;
+  const ok = [];
+
+  if (kcMeta) { applyLivePrice('cafe-ara', kcMeta.regularMarketPrice);  ok.push(`Arabica ${kcMeta.regularMarketPrice.toFixed(1)} ¢/lb`); }
+  if (ojMeta) { applyLivePrice('jo-conc',  ojMeta.regularMarketPrice);  ok.push(`OJ ${ojMeta.regularMarketPrice.toFixed(1)} ¢/lb`); }
+  if (zwMeta) {
+    /* ZW=F : cents/boisseau → €/tonne  (1 boisseau blé = 27,215 kg) */
+    const euroPerTonne = (zwMeta.regularMarketPrice / 100 / 0.027215) / eurusd;
+    applyLivePrice('ble-meu', euroPerTonne);
+    ok.push(`Blé ${euroPerTonne.toFixed(0)} €/t`);
+  }
+
+  if (ok.length) {
+    setStatus('yahoo-status',
+      `<span style="color:var(--accent-blue)">⏱ Yahoo Finance diff. 15 min — ${ok.join(' · ')}</span>`,
+      'inherit');
+    renderAll();
+  } else {
+    setStatus('yahoo-status', '◦ Yahoo Finance : données indisponibles', 'var(--text-muted)');
+  }
+}
+
+/* ═══════════════════════════════════
+   LIVE FETCH — RNM FranceAgriMer
+═══════════════════════════════════ */
+async function fetchRNMPage(param) {
+  const url = `https://rnm.franceagrimer.fr/prix?${param}`;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 10000);
+  const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(url), { signal: ctrl.signal });
+  clearTimeout(t);
+  if (!r.ok) throw new Error('proxy ' + r.status);
+  return (await r.json()).contents;
+}
+
+function extractRNMPrice(html, keyword) {
+  /* Cherche le keyword dans le HTML puis extrait le premier <strong>nombre</strong> suivant */
+  const idx = html.toLowerCase().indexOf(keyword.toLowerCase());
+  if (idx === -1) return null;
+  const section = html.slice(idx, idx + 500);
+  const m = section.match(/<strong[^>]*>([\d,\.]+)\s*<\/strong>/);
+  return m ? parseFloat(m[1].replace(',', '.')) : null;
+}
+
+async function fetchAllRNM() {
+  /* param → [ { keyword, pid, factor } ] */
+  const tasks = [
+    { param:'beurre', entries:[
+        { keyword:'plaquette 250',  pid:'beurre-pl', factor:0.1   }, // €/kg → €/100g
+        { keyword:'pasteurisé',     pid:'beurre-vr', factor:1     },
+    ]},
+    { param:'lait',   entries:[
+        { keyword:'entier',         pid:'lait-ent',  factor:0.001 }, // €/1000L → €/L
+    ]},
+    { param:'oeuf',   entries:[
+        { keyword:'plein air',      pid:'oeufs-pa',  factor:1     },
+    ]},
+    { param:'dinde',  entries:[
+        { keyword:'filet',          pid:'dinde-fi',  factor:1     },
+    ]},
+  ];
+
+  const ok = [];
+  for (const { param, entries } of tasks) {
+    try {
+      const html = await fetchRNMPage(param);
+      for (const e of entries) {
+        const raw = extractRNMPrice(html, e.keyword);
+        if (raw === null) continue;
+        if (applyLivePrice(e.pid, raw * e.factor)) ok.push(e.pid);
+      }
+    } catch (err) { console.warn('RNM fetch failed:', param, err.message); }
+  }
+
+  if (ok.length) {
+    setStatus('rnm-status',
+      `<span style="color:var(--accent-green)">📅 RNM FranceAgriMer données J-1 — ${ok.join(', ')}</span>`,
+      'inherit');
+    renderAll();
+  } else {
+    setStatus('rnm-status', '◦ RNM FranceAgriMer : données indisponibles', 'var(--text-muted)');
+  }
+}
+
+/* ═══════════════════════════════════
+   LIVE NEWS — RSS agriculture.gouv.fr
+═══════════════════════════════════ */
+function relDate(ms) {
+  if (!ms) return 'Récent';
+  const h = Math.floor((Date.now() - ms) / 3600000);
+  if (h < 24) return "Aujourd'hui, " + new Date(ms).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if (h < 48) return 'Hier';
+  return `Il y a ${Math.floor(h/24)}j`;
+}
+function newsTag(t) {
+  t = t.toLowerCase();
+  return /hausse|augment|bond|flambée|rebond|monte/.test(t) ? 'up'
+       : /baisse|recul|repli|chute|diminue/.test(t) ? 'dn' : 'neu';
+}
+function newsFam(t) {
+  t = t.toLowerCase();
+  if (/café|arabica|robusta/.test(t))             return 'Café';
+  if (/blé|farine|céréale/.test(t))               return 'Blé';
+  if (/porc|porcin/.test(t))                      return 'Porc';
+  if (/beurre/.test(t))                            return 'Beurre';
+  if (/\blait\b|lacté/.test(t))                   return 'Lait';
+  if (/œuf|oeuf|aviaire|influenza/.test(t))        return 'Œufs';
+  if (/dinde|poulet|volaille/.test(t))             return 'Dinde';
+  if (/orange|jus d.orange/.test(t))              return "Jus d'orange";
+  if (/viennoiserie|croissant|boulanger/.test(t)) return 'Viennoiseries';
+  return null; /* affiché dans toutes les familles */
+}
+
+async function fetchRSSNews() {
+  try {
+    const feedUrl = 'https://agriculture.gouv.fr/rss.xml';
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 9000);
+    const res = await fetch(
+      'https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl),
+      { signal: ctrl.signal }
     );
+    clearTimeout(t);
+    if (!res.ok) throw new Error('proxy ' + res.status);
+    const { contents } = await res.json();
+
+    const items = [];
+    const rxItem = /<item>([\s\S]*?)<\/item>/gi;
+    let m;
+    while ((m = rxItem.exec(contents)) !== null) {
+      const raw = m[1];
+      const title = (raw.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i)?.[1] ?? '').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+      /* <link> en RSS 2.0 est souvent un nœud texte entre deux balises vides */
+      const link  = raw.match(/<link>([^<\s][^<]*)<\/link>/i)?.[1]?.trim()
+                 ?? raw.match(/<guid[^>]*>([^<]+)<\/guid>/i)?.[1]?.trim();
+      const dRaw  = raw.match(/<pubDate>([^<]+)<\/pubDate>/i)?.[1];
+      const dMs   = dRaw ? new Date(dRaw).getTime() : 0;
+      if (!title || !link || !link.startsWith('http')) continue;
+      items.push({ src:'Min. Agriculture', title, url:link, fam:newsFam(title), tag:newsTag(title), date:relDate(dMs), dateMs:dMs });
+    }
+    if (items.length) {
+      LIVE_NEWS = items.sort((a,b) => b.dateMs - a.dateMs).slice(0, 20);
+      renderNews();
+      setStatus('rss-status',
+        `<span style="color:var(--accent-green)">✓ Actualités live — ${items.length} articles chargés (agriculture.gouv.fr)</span>`,
+        'inherit');
+    }
+  } catch(e) {
+    console.warn('RSS fetch failed:', e.message);
+    setStatus('rss-status', '◦ Actualités : flux RSS indisponible, articles de référence affichés', 'var(--text-muted)');
   }
 }
 
@@ -1269,10 +1456,19 @@ document.addEventListener('DOMContentLoaded', () => {
   Chart.defaults.color='#8b949e';
   Chart.defaults.borderColor='rgba(48,54,61,0.6)';
   renderAll();
-  fetchMPFCotation();                        // cotation live Porc FR
-  setInterval(updateTime, 60000);
-  setInterval(refreshData, 300000);
-  setInterval(fetchMPFCotation, 3600000);    // rafraîchissement toutes les heures
+
+  /* ── fetches live au démarrage (en parallèle) ── */
+  fetchMPFCotation();   // Porc carcasse — marche-porc-francais.com
+  fetchAllYahoo();      // KC=F · OJ=F · ZW=F — Yahoo Finance
+  fetchAllRNM();        // Beurre · Lait · Œufs · Dinde — RNM FranceAgriMer
+  fetchRSSNews();       // Actualités — agriculture.gouv.fr/rss.xml
+
+  setInterval(updateTime,      60_000);
+  setInterval(refreshData,    300_000);
+  setInterval(fetchMPFCotation, 3_600_000);   // Porc : toutes les heures
+  setInterval(fetchAllYahoo,    3_600_000);   // Yahoo : toutes les heures
+  setInterval(fetchAllRNM,     86_400_000);   // RNM : 1×/jour
+  setInterval(fetchRSSNews,     1_800_000);   // RSS : toutes les 30 min
 });
 </script>
 </body>
