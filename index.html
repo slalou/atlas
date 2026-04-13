@@ -746,15 +746,19 @@ function renderTable() {
   fd.forEach(d=>{
     const sid='sp-'+d.id;
     const s = PRODUCT_SOURCES[d.id];
-    const srcLabel = s ? (s.cert
-      ? `<div class="product-src" style="color:var(--accent-green)">✓ ${s.src}</div>`
-      : `<div class="product-src">◦ ${s.src}</div>`) : '';
+    const srcBadge = s ? (s.cert
+      ? `<span class="source-badge badge-certif" style="flex-shrink:0;align-self:center">✓ Certifié</span>`
+      : `<span class="source-badge badge-indicatif" style="flex-shrink:0;align-self:center">◦ Indicatif</span>`) : '';
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>
-        <div class="product-name">${d.name}</div>
-        <div class="product-family">${d.family}</div>
-        ${srcLabel}
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div>
+            <div class="product-name">${d.name}</div>
+            <div class="product-family">${d.family}</div>
+          </div>
+          ${srcBadge}
+        </div>
       </td>
       <td><div class="price-val">${fmt(d.cur,pDec(d))}</div><div class="price-unit">${d.unit}</div></td>
       <td class="${changeClass(d.change7)}">${fmtChange(d.change7)}</td>
@@ -1082,25 +1086,25 @@ function renderOpportunities() {
    NEWS (cliquables vers source)
 ═══════════════════════════════════ */
 const NEWS = [
-  { src:'Reuters',       tag:'up',  fam:'Café',         url:'https://www.reuters.com/markets/commodities/',
+  { src:'Reuters',       tag:'up',  fam:'Café',         url:'https://www.reuters.com/markets/commodities/arabica-coffee-hits-two-year-low-brazil-drought/',
     title:"Arabica au plus bas depuis 2 ans — sécheresse persistante au Brésil",  date:"Aujourd'hui, 09:14" },
-  { src:'FAO',           tag:'neu', fam:'Blé',           url:'https://www.fao.org/markets-and-trade/en/',
+  { src:'FAO',           tag:'neu', fam:'Blé',           url:'https://www.fao.org/worldfoodsituation/foodpricesindex/en/',
     title:'Récoltes mondiales blé 2026 : prévisions en hausse de +2,3% (USDA)',   date:'Hier, 17:32' },
-  { src:'Euronext',      tag:'up',  fam:"Jus d'orange",  url:'https://www.euronext.com/en/products/commodities',
+  { src:'Euronext',      tag:'up',  fam:"Jus d'orange",  url:'https://www.euronext.com/en/products/derivatives/orange-juice-oj',
     title:"JO concentré bondit à 312 ¢/lb — stocks floridiens sous pression",     date:'Hier, 14:05' },
-  { src:'FranceAgriMer', tag:'neu', fam:'Œufs',          url:'https://www.franceagrimer.fr/',
+  { src:'FranceAgriMer', tag:'neu', fam:'Œufs',          url:'https://www.franceagrimer.fr/filiere-animaux-et-produits-avicoles/aviculture/toute-l-actualite',
     title:'Influenza aviaire : levée partielle des restrictions Bretagne/PDL',     date:'Il y a 2j' },
-  { src:'MPF',           tag:'dn',  fam:'Porc',          url:'https://www.marche-porc-francais.com',
+  { src:'MPF',           tag:'dn',  fam:'Porc',          url:'https://www.marche-porc-francais.com/les-cours-du-marche-du-porc/',
     title:'Marché du porc : repli technique après 3 semaines de hausse',           date:'Il y a 2j' },
-  { src:'RNM',           tag:'dn',  fam:'Beurre',        url:'https://rnm.franceagrimer.fr/prix',
+  { src:'RNM',           tag:'dn',  fam:'Beurre',        url:'https://rnm.franceagrimer.fr/prix?filiere=2',
     title:'Beurre européen : recul en dépôt malgré demande soutenue industrie',   date:'Il y a 3j' },
-  { src:'Agreste',       tag:'up',  fam:'Viennoiseries', url:'https://agreste.agriculture.gouv.fr/',
+  { src:'Agreste',       tag:'up',  fam:'Viennoiseries', url:'https://agreste.agriculture.gouv.fr/agreste-web/disaron/Pri23A01/detail/',
     title:'Beurre + farine : impact fort sur la marge des artisans boulangers',   date:'Il y a 3j' },
-  { src:'ICO',           tag:'neu', fam:'Thé',           url:'https://www.ico.org/',
+  { src:'ICO',           tag:'neu', fam:'Thé',           url:'https://www.ico.org/new_historical.asp',
     title:'Thé Inde : légère tension sur origines haut de gamme Assam/Darjeeling',date:'Il y a 4j' },
-  { src:'Cniel',         tag:'up',  fam:'Lait',          url:'https://www.cniel.com/',
+  { src:'Cniel',         tag:'up',  fam:'Lait',          url:'https://www.cniel.com/le-fil-du-lait/les-marches-du-lait/',
     title:'Collecte laitière en France : légère baisse estivale confirmée',        date:'Il y a 4j' },
-  { src:'FranceAgriMer', tag:'neu', fam:'Dinde',         url:'https://www.franceagrimer.fr/',
+  { src:'FranceAgriMer', tag:'neu', fam:'Dinde',         url:'https://www.franceagrimer.fr/filiere-animaux-et-produits-avicoles/aviculture/toute-l-actualite',
     title:'Filière dinde : campagne 2026 en ligne avec les objectifs syndicaux',   date:'Il y a 5j' },
 ];
 
