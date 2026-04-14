@@ -1,0 +1,80 @@
+{
+  "updated": "2026-04-14T00:40:25",
+  "source": "RNM FranceAgriMer / ICE NYBOT Yahoo Finance",
+  "history": {
+    "beurre-pl": [
+      6.3
+    ],
+    "lait-ent": [
+      1.28
+    ],
+    "oeufs-pa": [
+      18.63
+    ],
+    "porc-ue": [
+      1.57
+    ],
+    "cafe-ara": [
+      295.5
+    ],
+    "ble-cbot": [
+      579.75
+    ]
+  },
+  "prices": {
+    "beurre-pl": {
+      "label": "beurre-pl",
+      "price": 6.3,
+      "unit": "€/kg",
+      "source": "RNM FranceAgriMer",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    },
+    "lait-ent": {
+      "label": "lait-ent",
+      "price": 1.28,
+      "unit": "€/L",
+      "source": "RNM FranceAgriMer",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    },
+    "oeufs-pa": {
+      "label": "oeufs-pa",
+      "price": 18.63,
+      "unit": "€/100 pcs",
+      "source": "RNM FranceAgriMer",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    },
+    "porc-ue": {
+      "label": "porc-ue",
+      "price": 1.57,
+      "unit": "€/kg",
+      "source": "RNM FranceAgriMer",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    },
+    "cafe-ara": {
+      "label": "cafe-ara",
+      "price": 295.5,
+      "unit": "¢USD/lb",
+      "source": "ICE/NYBOT Yahoo Finance",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    },
+    "ble-cbot": {
+      "label": "ble-cbot",
+      "price": 579.75,
+      "unit": "¢USD/bu",
+      "source": "ICE/NYBOT Yahoo Finance",
+      "variations": {},
+      "trend": "stable",
+      "date": "2026-04-14"
+    }
+  }
+}
