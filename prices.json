@@ -1,79 +1,85 @@
 {
-  "updated": "2026-04-14T00:40:25",
+  "updated": "2026-04-14T00:41:06",
   "source": "RNM FranceAgriMer / ICE NYBOT Yahoo Finance",
   "history": {
     "beurre-pl": [
+      6.3,
       6.3
     ],
     "lait-ent": [
+      1.28,
       1.28
     ],
     "oeufs-pa": [
+      18.63,
       18.63
     ],
     "porc-ue": [
+      1.57,
       1.57
     ],
     "cafe-ara": [
+      295.5,
       295.5
     ],
     "ble-cbot": [
+      579.75,
       579.75
     ]
   },
   "prices": {
     "beurre-pl": {
-      "label": "beurre-pl",
+      "label": "Beurre plaquette 250g",
       "price": 6.3,
       "unit": "€/kg",
       "source": "RNM FranceAgriMer",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     },
     "lait-ent": {
-      "label": "lait-ent",
+      "label": "Lait UHT demi-écrémé",
       "price": 1.28,
       "unit": "€/L",
       "source": "RNM FranceAgriMer",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     },
     "oeufs-pa": {
-      "label": "oeufs-pa",
+      "label": "Œufs M France (100 pcs)",
       "price": 18.63,
       "unit": "€/100 pcs",
       "source": "RNM FranceAgriMer",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     },
     "porc-ue": {
-      "label": "porc-ue",
+      "label": "Porc carcasse cl. E",
       "price": 1.57,
       "unit": "€/kg",
       "source": "RNM FranceAgriMer",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     },
     "cafe-ara": {
-      "label": "cafe-ara",
+      "label": "Café Arabica (ICE/NYBOT)",
       "price": 295.5,
       "unit": "¢USD/lb",
       "source": "ICE/NYBOT Yahoo Finance",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     },
     "ble-cbot": {
-      "label": "ble-cbot",
+      "label": "Blé CBOT (proxy MATIF)",
       "price": 579.75,
       "unit": "¢USD/bu",
       "source": "ICE/NYBOT Yahoo Finance",
       "variations": {},
-      "trend": "stable",
+      "trend": "➡️ stable",
       "date": "2026-04-14"
     }
   }
